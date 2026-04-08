@@ -84,14 +84,10 @@
             padding-right: 2rem; appearance: none; font-size: 0.85rem; height: 38px;
         }
 
-        /* 排版切換容器與按鈕高度校準 */
-        .control-group { height: 38px; display: flex; align-items: center; }
-        .layout-toggle-container { display: flex; background: white; border: 1px solid #fce7f3; border-radius: 8px; padding: 3px; height: 100%; box-sizing: border-box; }
+        .layout-toggle-container { background: white; border: 1px solid #fce7f3; border-radius: 8px; display: flex; padding: 2px; height: 38px; align-items: center; }
+        .layout-toggle-btn { width: 34px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; cursor: pointer; color: #d1d5db; }
+        .layout-toggle-btn.active { background: #ec4899; color: white; }
         
-        @media (min-width: 768px) {
-            .layout-toggle-container { display: none !important; }
-        }
-
         .video-hint { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); color: white; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; position: absolute; bottom: 12px; left: 12px; z-index: 20; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .pulse-icon { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
@@ -107,12 +103,16 @@
         .lightbox-slider { flex-grow: 1; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
         .lightbox-slider::-webkit-scrollbar { display: none; }
         .lightbox-slider img { flex: 0 0 100%; height: 100%; object-fit: contain; scroll-snap-align: start; }
-        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; z-index: 1010; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; }
-        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: white; background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 1010; }
-        .lightbox-prev { left: 20px; }
-        .lightbox-next { right: 20px; }
-        .lightbox-hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.7); font-size: 14px; background: rgba(0,0,0,0.5); padding: 8px 20px; border-radius: 20px; z-index: 1010; pointer-events: none; }
-        .lightbox-counter { position: absolute; top: 25px; left: 50%; transform: translateX(-50%); color: white; font-size: 16px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 4px 16px; border-radius: 20px; z-index: 1010; }
+        .lightbox-close { position: absolute; top: 15px; right: 15px; color: white; font-size: 24px; z-index: 1010; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 50%; }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: white; background: rgba(255,255,255,0.1); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; z-index: 1010; }
+        .lightbox-prev { left: 15px; }
+        .lightbox-next { right: 15px; }
+        .lightbox-counter { position: absolute; top: 20px; left: 20px; color: white; font-size: 14px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 20px; z-index: 1010; }
+        
+        /* 預覽時底部資訊區 */
+        .lightbox-info { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 60px 20px 30px; position: absolute; bottom: 0; left: 0; right: 0; color: white; z-index: 1010; pointer-events: none; }
+        .lightbox-product-name { font-size: 1rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; display: flex; align-items: flex-start; gap: 8px; }
+        .lightbox-product-price { color: #f472b6; font-size: 1.25rem; font-weight: 900; }
 
         .info-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; text-align: left; margin-top: 2rem; }
         @media (min-width: 640px) { .info-grid { grid-template-columns: repeat(3, 1fr); gap: 0; } }
@@ -125,15 +125,17 @@
             .info-item:last-child { border-radius: 0 1rem 1rem 0; border-right: 1px solid #ffe4e6; }
         }
         
-        .product-count-badge { background: #fff1f2; color: #db2777; font-size: 12px; padding: 0 12px; border-radius: 8px; border: 1px solid #ffe4e6; font-weight: 800; display: flex; align-items: center; gap: 6px; height: 38px; }
+        .product-count-badge { background: #fff1f2; color: #db2777; font-size: 12px; padding: 0 12px; border-radius: 10px; border: 1px solid #ffe4e6; font-weight: 800; display: flex; align-items: center; gap: 6px; height: 38px; }
     </style>
 </head>
 <body class="flower-bg">
 
+    <!-- 跑馬燈容器 -->
     <div id="marquee-container" class="bg-pink-500 text-white py-3 overflow-hidden hidden shadow-sm">
         <div class="marquee-content text-base font-bold" id="marquee-text"></div>
     </div>
 
+    <!-- 圖片放大預覽容器 -->
     <div id="lightbox" onclick="closeLightbox(event)">
         <div class="lightbox-content">
             <div id="lightbox-counter" class="lightbox-counter">1 / 1</div>
@@ -141,7 +143,10 @@
             <div id="lightbox-prev" class="lightbox-nav lightbox-prev" onclick="lightboxMove(-1, event)"><i class="fas fa-chevron-left"></i></div>
             <div id="lightbox-next" class="lightbox-nav lightbox-next" onclick="lightboxMove(1, event)"><i class="fas fa-chevron-right"></i></div>
             <div id="lightbox-slider" class="lightbox-slider" onscroll="handleLightboxScroll()"></div>
-            <div id="lightbox-hint" class="lightbox-hint"><i class="fas fa-hand-pointer mr-2"></i>可以左右滑動或點擊按鈕切換</div>
+            <div class="lightbox-info">
+                <div id="lightbox-p-name" class="lightbox-product-name"></div>
+                <div id="lightbox-p-price" class="lightbox-product-price"></div>
+            </div>
         </div>
     </div>
 
@@ -167,25 +172,25 @@
             <button onclick="applyFilter('all', 'all')" id="btn-all" data-filter-type="all" data-filter-val="all" class="filter-btn filter-btn-active">所有商品</button>
         </div>
 
-        <!-- 控制欄位：對齊高度 38px -->
-        <div class="flex justify-between items-center mt-5 gap-2">
-            <div id="total-product-count" class="product-count-badge hidden flex-shrink-0">
+        <!-- 排序與排版控制列 -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mt-6">
+            <div id="total-product-count" class="product-count-badge hidden shrink-0">
                 <i class="fas fa-shopping-bag text-[10px]"></i>
                 <span id="count-text"></span>
             </div>
             
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                <!-- 行動版專屬排版切換 -->
-                <div class="layout-toggle-container flex-shrink-0">
-                    <button id="layout-single" onclick="toggleLayout('single')" class="w-9 h-full flex items-center justify-center rounded text-gray-400 active:scale-95 transition-colors">
+            <div class="flex items-center gap-2">
+                <!-- 排版切換 -->
+                <div class="layout-toggle-container">
+                    <div id="layout-single" onclick="toggleLayout('single')" class="layout-toggle-btn active" title="單欄">
                         <i class="fas fa-square"></i>
-                    </button>
-                    <button id="layout-grid" onclick="toggleLayout('grid')" class="w-9 h-full flex items-center justify-center rounded text-pink-500 bg-pink-50 active:scale-95 transition-colors">
+                    </div>
+                    <div id="layout-grid" onclick="toggleLayout('grid')" class="layout-toggle-btn" title="雙欄">
                         <i class="fas fa-th-large"></i>
-                    </button>
+                    </div>
                 </div>
-                
-                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-2 py-1.5 text-gray-600 font-medium focus:outline-none flex-shrink-0">
+                <!-- 排序選單 -->
+                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-2 text-gray-600 font-medium focus:outline-none">
                     <option value="default">預設排序</option>
                     <option value="date-new">最新上架</option>
                     <option value="date-old">依上架順序</option>
@@ -197,8 +202,7 @@
     </div>
 
     <main class="max-w-screen-md mx-auto px-4 py-5">
-        <!-- 產品容器 -->
-        <div id="product-container" class="grid min-h-[300px]">
+        <div id="product-container" class="grid grid-cols-1 gap-6 min-h-[300px]">
             <div id="loading-state" class="col-span-full text-center py-24 text-gray-400">
                 <div class="spinner"></div>
                 <p class="text-base font-medium tracking-widest px-4 text-pink-500/80">正在連線聖荷西，挑選最划算的精品 ✈️</p>
@@ -260,12 +264,12 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_v32_safe_link';
+        const CACHE_KEY = 'sanjose_v31_safe_link';
 
         let allProducts = [];
         let activeFilter = { type: 'all', value: 'all' };
         let currentPage = 1;
-        let layoutMode = 'grid'; // 預設雙欄並排 (配合 PC 需求)
+        let layoutMode = 'single'; 
         const itemsPerPage = 10;
         
         const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -294,36 +298,37 @@
             }
         }
 
-        // 初始化 Layout，如果是手機且使用者沒切過，可維持 grid。
-        function applyLayoutToUI() {
+        function toggleLayout(mode) {
+            layoutMode = mode;
             const container = document.getElementById('product-container');
             const singleBtn = document.getElementById('layout-single');
             const gridBtn = document.getElementById('layout-grid');
 
-            if (layoutMode === 'grid') {
+            if (mode === 'grid') {
                 container.classList.remove('grid-cols-1');
-                container.classList.add('grid-cols-2', 'md:grid-cols-3', 'grid-layout-2', 'gap-3');
-                gridBtn.classList.add('text-pink-500', 'bg-pink-50');
-                singleBtn.classList.remove('text-pink-500', 'bg-pink-50');
-                singleBtn.classList.add('text-gray-400');
+                container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                gridBtn.classList.add('active');
+                singleBtn.classList.remove('active');
             } else {
                 container.classList.add('grid-cols-1');
-                container.classList.remove('grid-cols-2', 'md:grid-cols-3', 'grid-layout-2', 'gap-3');
-                singleBtn.classList.add('text-pink-500', 'bg-pink-50');
-                gridBtn.classList.remove('text-pink-500', 'bg-pink-50');
-                gridBtn.classList.add('text-gray-400');
+                container.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                singleBtn.classList.add('active');
+                gridBtn.classList.remove('active');
             }
-        }
-
-        function toggleLayout(mode) {
-            layoutMode = mode;
-            applyLayoutToUI();
             updateDisplay(false);
-            // GA 追蹤切換排版
-            trackGAEvent('layout_change', { mode: mode });
         }
 
         async function init() {
+            // PC 版預設雙欄
+            if (window.innerWidth >= 640) {
+                layoutMode = 'grid';
+                const container = document.getElementById('product-container');
+                container.classList.remove('grid-cols-1');
+                container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                document.getElementById('layout-grid').classList.add('active');
+                document.getElementById('layout-single').classList.remove('active');
+            }
+
             const params = new URLSearchParams(window.location.search);
             const sortParam = params.get('sort');
             if (sortParam) document.getElementById('sort-order').value = sortParam;
@@ -331,9 +336,6 @@
             const saleParam = params.get('sale');
             if (brandParam) activeFilter = { type: 'brand', value: brandParam };
             else if (saleParam) activeFilter = { type: 'sale', value: saleParam };
-
-            // 預設執行一次排版套用
-            applyLayoutToUI();
 
             fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(rows => {
                 const container = document.getElementById('marquee-text');
@@ -466,13 +468,21 @@
                 const hasMultipleImages = p.images.length > 1;
                 const showVideoHint = p.postUrl && p.postUrl.toString().trim() !== "";
                 
+                // 處理資料傳遞，避免 JSON parse 錯誤
+                const productData = JSON.stringify({
+                    name: p.name,
+                    price: p.specialPrice || p.salePrice || '電洽',
+                    discount: p.discount,
+                    images: p.images
+                }).replace(/"/g, '&quot;');
+
                 card.innerHTML = `
                     ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
                     <div class="img-container">
                         <div class="slider-nav nav-left" onclick="handleNavClick(this, -1, event)" style="display:none"><i class="fas fa-chevron-left"></i></div>
                         <div class="slider-nav nav-right" onclick="handleNavClick(this, 1, event)" ${hasMultipleImages ? '' : 'style="display:none"'}><i class="fas fa-chevron-right"></i></div>
                         <div class="img-slider" onscroll="handleSliderScroll(this)">
-                            ${p.images.length > 0 ? p.images.map((img, idx) => `<img data-src="${img}" class="lazy-img" onclick="openLightbox(${JSON.stringify(p.images).replace(/"/g, '&quot;')}, ${idx})">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
+                            ${p.images.length > 0 ? p.images.map((img, idx) => `<img data-src="${img}" class="lazy-img" onclick="openLightbox(${productData}, ${idx})">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
                         </div>
                         ${hasMultipleImages ? `
                             <div class="slider-dots">
@@ -534,32 +544,36 @@
             slider.scrollTo({ left: next * slider.clientWidth, behavior: 'smooth' });
         }
 
-        function openLightbox(images, startIdx) {
+        function openLightbox(p, startIdx) {
             const lightbox = document.getElementById('lightbox');
             const slider = document.getElementById('lightbox-slider');
             const counter = document.getElementById('lightbox-counter');
             const prevBtn = document.getElementById('lightbox-prev');
             const nextBtn = document.getElementById('lightbox-next');
-            const hint = document.getElementById('lightbox-hint');
+            
+            const nameEl = document.getElementById('lightbox-p-name');
+            const priceEl = document.getElementById('lightbox-p-price');
 
             slider.style.visibility = 'hidden'; 
             slider.style.scrollBehavior = 'auto'; 
-            slider.innerHTML = images.map(src => `<img src="${src}" alt="preview">`).join('');
+            slider.innerHTML = p.images.map(src => `<img src="${src}" alt="preview">`).join('');
             
+            // 填寫預覽資訊
+            nameEl.innerHTML = (p.discount ? `<span class="discount-badge">${p.discount}</span>` : '') + p.name;
+            priceEl.innerText = p.price;
+
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            const total = images.length;
+            const total = p.images.length;
             counter.innerText = `${startIdx + 1} / ${total}`;
             
             if (total <= 1) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
-                hint.style.display = 'none';
             } else {
                 prevBtn.style.display = 'flex';
                 nextBtn.style.display = 'flex';
-                hint.style.display = 'flex';
             }
 
             requestAnimationFrame(() => {
@@ -649,7 +663,6 @@
 
         function applyFilter(val, type) {
             activeFilter = { type, value: val };
-            trackGAEvent('filter_click', { filter_type: type, filter_value: val });
             const url = new URL(window.location);
             url.searchParams.delete('brand');
             url.searchParams.delete('sale');
@@ -660,7 +673,6 @@
 
         function handleSortChange() {
             const sortVal = document.getElementById('sort-order').value;
-            trackGAEvent('sort_change', { sort_type: sortVal });
             const url = new URL(window.location);
             url.searchParams.set('sort', sortVal);
             window.history.pushState({}, '', url);
