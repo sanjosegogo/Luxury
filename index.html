@@ -80,6 +80,8 @@
                 <span class="text-[10px] text-gray-400 font-bold uppercase">排序方式:</span>
                 <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-3 py-1 text-xs text-gray-600 font-medium focus:outline-none focus:ring-1 focus:ring-pink-300">
                     <option value="default">預設排序</option>
+                    <option value="date-new">最新上架</option>
+                    <option value="date-old">依上架順序</option>
                     <option value="price-asc">價格：由低到高</option>
                     <option value="price-desc">價格：由高到低</option>
                 </select>
@@ -106,7 +108,7 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const CACHE_KEY = 'sanjose_products_cache_v5'; 
-        let rawProducts = []; // 原始順序資料 (正向)
+        let rawProducts = []; // 原始順序資料 (正向，由舊到新)
         let reversedProducts = []; // 反向順序資料 (最新在前)
         let currentFilteredProducts = []; // 當前過濾後的暫存資料 (用來排序)
         let currentFilter = { value: 'all', type: 'brand' };
@@ -131,21 +133,21 @@
                 
                 const validRows = rows.slice(1).filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]);
                 
-                const newData = validRows.map(row => {
+                const newData = validRows.map((row, index) => {
                     const priceS = row[7] ? parseInt(row[7].toString().replace(/[^\d]/g, ''), 10) : 0;
                     const priceSpecial = row[8] ? parseInt(row[8].toString().replace(/[^\d]/g, ''), 10) : 0;
-                    // 計算最終顯示價格 (優先使用特價)
                     const finalPriceNum = priceSpecial > 0 ? priceSpecial : priceS;
 
                     return {
                         id: row[0], 
+                        originalIndex: index, 
                         saleLabel: row[2]?.toString().trim() || null, 
                         discount: (row[8] && row[8] !== '') ? parseDiscount(row[4]) : null, 
                         name: row[5], 
                         marketPrice: formatPrice(row[6]), 
                         salePrice: formatPrice(row[7]), 
                         specialPrice: formatPrice(row[8]), 
-                        finalPrice: finalPriceNum, // 用於排序
+                        finalPrice: finalPriceNum, 
                         size: row[9], 
                         brand: row[10] || '其他', 
                         postUrl: row[11], 
@@ -220,7 +222,6 @@
             allBtns.forEach(b => { if(b.innerText === value) b.classList.add('filter-btn-active'); });
             if (value === 'all') document.getElementById('btn-all').classList.add('filter-btn-active');
 
-            // 根據類型選擇基礎排序
             if (value === 'all') {
                 currentFilteredProducts = [...reversedProducts];
             } else if (type === 'brand') {
@@ -229,7 +230,6 @@
                 currentFilteredProducts = rawProducts.filter(p => p.saleLabel === value);
             }
             
-            // 套用當前選擇的價格排序
             executeSortAndRender();
 
             if (updateURL) {
@@ -253,8 +253,11 @@
                 displayList.sort((a, b) => a.finalPrice - b.finalPrice);
             } else if (sortOrder === 'price-desc') {
                 displayList.sort((a, b) => b.finalPrice - a.finalPrice);
+            } else if (sortOrder === 'date-new') {
+                displayList.sort((a, b) => b.originalIndex - a.originalIndex);
+            } else if (sortOrder === 'date-old') {
+                displayList.sort((a, b) => a.originalIndex - b.originalIndex);
             }
-            // default 則維持 currentFilteredProducts 的原始順序 (已在 applyFilter 處理好)
 
             renderProducts(displayList);
         }
