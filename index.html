@@ -13,8 +13,7 @@
         'cookie_flags': 'SameSite=None;Secure',
         'send_page_view': true
       });
-      // 紀錄來源為 GitHub
-      gtag('event', 'app_init', { 'platform': 'github_pages' });
+      gtag('event', 'app_init', { 'platform': 'github_pages', 'version': 'pink-strike-price' });
     </script>
     
     <meta charset="UTF-8">
@@ -34,6 +33,10 @@
         .img-loaded { opacity: 1 !important; }
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 4px 12px; border-radius: 0 0 15px 0; font-size: 0.8rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
+        
+        /* 特賣折數標籤：僅特賣時顯示，放在名稱前 */
+        .discount-badge { background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 800; margin-right: 6px; vertical-align: middle; display: inline-block; border: 1px solid #fecaca; }
+        
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; }
         .brand-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; }
@@ -50,9 +53,7 @@
         <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="text-2xl">🦋</span>
-                <div class="flex flex-col">
-                    <h1 class="text-xl font-bold text-gray-800">聖荷西好物購🇺🇸</h1>
-                </div>
+                <h1 class="text-xl font-bold text-gray-800">聖荷西好物購🇺🇸</h1>
             </div>
             <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" onclick="gtag('event', 'join_facebook')" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
                 加入社團
@@ -82,7 +83,6 @@
             <a href="https://www.google.com/maps/search/?api=1&query=台北市長春路380號1樓" target="_blank" onclick="gtag('event', 'open_map')" class="block">
                 <p class="font-bold mb-1 text-pink-500"><i class="fas fa-map-marker-alt mr-1"></i> 長春路總店</p>
                 <p>台北市長春路380號1樓</p>
-                <p class="text-[9px] text-pink-300 mt-1 italic">點擊開啟地圖導航</p>
             </a>
         </div>
     </footer>
@@ -90,14 +90,21 @@
     <div id="update-toast">✨ 發現新折扣，已為你更新</div>
 
     <script>
-        // 已替換為你的 GAS Web App URL
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
-        
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_products_cache';
+        const CACHE_KEY = 'sanjose_products_cache_v4'; 
         const MARQUEE_KEY = 'sanjose_marquee_cache';
 
         let allProducts = [];
+
+        function parseDiscount(val) {
+            if (!val || val === "") return null;
+            let num = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
+            if (isNaN(num)) return null;
+            if (num > 0 && num < 1) num = num * 100;
+            else if (num > 0 && num < 10) num = num * 10;
+            return "特價再下殺" + Math.round(num) + "折";
+        }
 
         function formatPrice(val) {
             if (!val || val === '0' || val === '') return null;
@@ -108,13 +115,11 @@
         async function init() {
             const cachedData = localStorage.getItem(CACHE_KEY);
             const cachedMarquee = localStorage.getItem(MARQUEE_KEY);
-
             if (cachedMarquee) {
                 const msgs = JSON.parse(cachedMarquee);
                 document.getElementById('marquee-text').innerText = `🌸 ${msgs.join('　✨　')} 🌸`;
                 document.getElementById('marquee-container').classList.remove('hidden');
             }
-            
             if (cachedData) {
                 allProducts = JSON.parse(cachedData);
                 document.getElementById('loading-state').style.display = 'none';
@@ -127,7 +132,6 @@
 
         async function syncData() {
             try {
-                // 背景同步跑馬燈
                 fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(msgs => {
                     localStorage.setItem(MARQUEE_KEY, JSON.stringify(msgs));
                     if (msgs.length > 0) {
@@ -136,27 +140,28 @@
                     }
                 }).catch(()=>{});
 
-                // 背景同步商品資料
                 const response = await fetch(`${_0xAPI}?action=get_data`);
                 const rows = await response.json();
                 
-                // 假設第一欄是 ID，第二欄是上架狀態(TRUE/FALSE)，第三欄是特賣標籤，第五欄是名稱
-                const newData = rows.filter(row => (row[1] === true || row[1] === 'TRUE') && row[4]).map(row => ({
-                    id: row[0],
-                    isSale: row[2]?.toString().trim() !== '',
-                    saleLabel: row[2]?.toString().trim(),
-                    name: row[4],
-                    marketPrice: formatPrice(row[5]),
-                    salePrice: formatPrice(row[6]),
-                    specialPrice: formatPrice(row[7]),
-                    size: row[8],
-                    brand: row[9] || '其他',
-                    postUrl: row[10],
-                    images: row.slice(11).filter(url => url && url.toString().startsWith('http'))
-                }));
+                const newData = rows.filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]).map(row => {
+                    const hasSpecial = row[8] && row[8].toString().trim() !== ''; 
+                    return {
+                        id: row[0], 
+                        isSale: row[2]?.toString().trim() !== '', 
+                        saleLabel: row[2]?.toString().trim(),
+                        discount: hasSpecial ? parseDiscount(row[4]) : null, 
+                        name: row[5], 
+                        marketPrice: formatPrice(row[6]), 
+                        salePrice: formatPrice(row[7]), 
+                        specialPrice: formatPrice(row[8]), 
+                        size: row[9], 
+                        brand: row[10] || '其他', 
+                        postUrl: row[11], 
+                        images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http')) 
+                    };
+                });
 
                 newData.sort((a, b) => (b.isSale ? 1 : 0) - (a.isSale ? 1 : 0));
-
                 const currentCached = localStorage.getItem(CACHE_KEY);
                 if (JSON.stringify(newData) !== currentCached) {
                     allProducts = newData;
@@ -165,8 +170,6 @@
                     if (allProducts.some(p => p.isSale)) document.getElementById('btn-sale').classList.remove('hidden');
                     updateBrandFilters(allProducts);
                     renderProducts(allProducts);
-                    
-                    // 如果原本就有舊資料才跳提示
                     if(currentCached) {
                         const toast = document.getElementById('update-toast');
                         toast.style.display = 'block';
@@ -174,7 +177,7 @@
                     }
                 }
             } catch (e) {
-                console.error("Sync error:", e);
+                console.error("Sync Error:", e);
             }
         }
 
@@ -189,10 +192,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'brand-btn bg-white px-4 py-1.5 rounded-full border border-pink-50 text-xs text-gray-500 shadow-sm transition-all';
                 btn.innerText = brand;
-                btn.onclick = () => {
-                    filterByBrand(brand, btn);
-                    gtag('event', 'select_brand', { 'brand_name': brand });
-                };
+                btn.onclick = () => { filterByBrand(brand, btn); gtag('event', 'select_brand', { 'brand_name': brand }); };
                 container.appendChild(btn);
             });
         }
@@ -216,12 +216,16 @@
 
         function renderProducts(products) {
             const container = document.getElementById('product-container');
-            container.innerHTML = products.length === 0 ? '<div class="col-span-full text-center py-20 text-gray-400 text-sm">暫無符合條件的商品。</div>' : '';
+            container.innerHTML = products.length === 0 ? '<div class="col-span-full text-center py-20 text-gray-400 text-sm">暫無商品。</div>' : '';
             const fragment = document.createDocumentFragment();
             products.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                const finalPrice = p.specialPrice || p.salePrice;
+                
+                const hasSpecial = p.specialPrice !== null;
+                const mainDisplayPrice = hasSpecial ? p.specialPrice : p.salePrice;
+                const secondaryPrice = hasSpecial ? p.salePrice : null;
+
                 const targetLink = (p.postUrl && p.postUrl !== '') ? p.postUrl : _FB_URL;
                 const imagesHTML = p.images.length > 0 
                     ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="handleBuy('${targetLink}', '${p.name}')">`).join('')
@@ -235,29 +239,30 @@
                     </div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-gray-800 text-lg leading-tight mb-1">${p.name}</h3>
-                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded">SIZE: ${p.size || 'F'}</span>
+                            <h3 class="font-bold text-gray-800 text-lg leading-tight mb-1">
+                                ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
+                            </h3>
+                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded uppercase font-medium">SIZE: ${p.size || 'F'}</span>
                         </div>
                         <div class="mt-4">
-                            <div class="flex flex-col mb-3">
-                                <span class="text-gray-400 text-xs line-through">專櫃價 ${p.marketPrice || '---'}</span>
-                                <span class="${p.isSale ? 'text-red-500' : 'text-pink-600'} font-extrabold text-2xl">${finalPrice}</span>
+                            <div class="flex flex-col mb-3 gap-0.5">
+                                <span class="text-gray-400 text-[10px] line-through">專櫃價 ${p.marketPrice || '---'}</span>
+                                ${secondaryPrice ? `<span class="text-pink-500 text-xs line-through italic font-medium">特價 ${secondaryPrice}</span>` : ''}
+                                <span class="text-pink-600 font-black text-2xl tracking-tight">
+                                    ${mainDisplayPrice}
+                                </span>
                             </div>
-                            <button onclick="handleBuy('${targetLink}', '${p.name}')" class="block w-full text-center ${p.isSale ? 'bg-red-500' : 'bg-pink-500'} text-white py-2.5 rounded-full text-sm font-bold shadow-sm transition-transform active:scale-95">立即私訊購買</button>
+                            <button onclick="handleBuy('${targetLink}', '${p.name}')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform">立即私訊購買</button>
                         </div>
                     </div>`;
                 fragment.appendChild(card);
             });
             container.appendChild(fragment);
             
-            // 延遲載入圖片提升體驗
             setTimeout(() => { 
                 document.querySelectorAll('.lazy-img').forEach(img => {
                     const src = img.getAttribute('data-src');
-                    if (src) { 
-                        img.src = src; 
-                        img.onload = () => img.classList.add('img-loaded'); 
-                    }
+                    if (src) { img.src = src; img.onload = () => img.classList.add('img-loaded'); }
                 }); 
             }, 50);
         }
