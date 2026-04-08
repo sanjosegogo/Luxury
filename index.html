@@ -13,7 +13,6 @@
         'cookie_flags': 'SameSite=None;Secure',
         'send_page_view': true
       });
-      gtag('event', 'app_init', { 'platform': 'github_pages', 'version': 'pink-strike-price' });
     </script>
     
     <meta charset="UTF-8">
@@ -33,14 +32,15 @@
         .img-loaded { opacity: 1 !important; }
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 4px 12px; border-radius: 0 0 15px 0; font-size: 0.8rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
-        
-        /* 特賣折數標籤：僅特賣時顯示，放在名稱前 */
         .discount-badge { background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 800; margin-right: 6px; vertical-align: middle; display: inline-block; border: 1px solid #fecaca; }
         
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; }
-        .brand-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; }
+        .filter-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; border-color: #ec4899 !important; }
         #update-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 16px; border-radius: 50px; font-size: 12px; z-index: 100; display: none; }
+        
+        /* 排序下拉選單樣式 */
+        .sort-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ec4899'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1rem; padding-right: 2rem; appearance: none; }
     </style>
 </head>
 <body class="flower-bg">
@@ -51,20 +51,39 @@
 
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-100">
         <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="location.href=location.pathname">
                 <span class="text-2xl">🦋</span>
                 <h1 class="text-xl font-bold text-gray-800">聖荷西好物購🇺🇸</h1>
             </div>
-            <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" onclick="gtag('event', 'join_facebook')" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
+            <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
                 加入社團
             </a>
         </div>
     </header>
 
+    <!-- 分類過濾區 -->
     <div class="max-w-screen-md mx-auto px-4 mt-6">
-        <div id="brand-filter" class="flex flex-wrap gap-2 pb-2">
-            <button onclick="filterBySale()" id="btn-sale" class="brand-btn bg-rose-50 text-rose-500 border border-rose-100 px-4 py-1.5 rounded-full text-xs font-bold hidden">🔥 限時特賣</button>
-            <button onclick="filterByBrand('all')" id="btn-all" class="brand-btn brand-btn-active px-4 py-1.5 rounded-full border border-pink-100 text-xs shadow-sm">所有商品</button>
+        <div class="mb-2 text-[10px] text-pink-400 font-bold uppercase tracking-widest">限時活動分類</div>
+        <div id="sale-filter" class="flex flex-wrap gap-2 mb-4">
+            <!-- 動態生成特賣分類按鈕 -->
+        </div>
+
+        <div class="mb-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">品牌分類</div>
+        <div id="brand-filter" class="flex flex-wrap gap-2 pb-2 border-b border-pink-50">
+            <button onclick="applyFilter('all', 'brand')" id="btn-all" class="filter-btn filter-btn-active px-4 py-1.5 rounded-full border border-pink-100 bg-white text-xs shadow-sm">所有商品</button>
+            <!-- 動態生成品牌按鈕 -->
+        </div>
+
+        <!-- 排序選單 -->
+        <div class="flex justify-end mt-4">
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] text-gray-400 font-bold uppercase">排序方式:</span>
+                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-3 py-1 text-xs text-gray-600 font-medium focus:outline-none focus:ring-1 focus:ring-pink-300">
+                    <option value="default">預設排序</option>
+                    <option value="price-asc">價格：由低到高</option>
+                    <option value="price-desc">價格：由高到低</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -79,81 +98,54 @@
 
     <footer class="text-center py-12 bg-white/50 mt-10 text-gray-400 text-xs border-t border-pink-50">
         <p class="font-bold text-gray-600 text-sm mb-1">聖荷西好物購🇺🇸</p>
-        <div class="bg-white mx-auto max-w-xs p-4 rounded-2xl shadow-sm border border-pink-50 text-gray-500 my-6">
-            <a href="https://www.google.com/maps/search/?api=1&query=台北市長春路380號1樓" target="_blank" onclick="gtag('event', 'open_map')" class="block">
-                <p class="font-bold mb-1 text-pink-500"><i class="fas fa-map-marker-alt mr-1"></i> 長春路總店</p>
-                <p>台北市長春路380號1樓</p>
-            </a>
-        </div>
+        <p>台北市長春路380號1樓</p>
     </footer>
 
     <div id="update-toast">✨ 發現新折扣，已為你更新</div>
 
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
-        const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_products_cache_v4'; 
-        const MARQUEE_KEY = 'sanjose_marquee_cache';
+        const CACHE_KEY = 'sanjose_products_cache_v5'; 
+        let rawProducts = []; // 原始順序資料 (正向)
+        let reversedProducts = []; // 反向順序資料 (最新在前)
+        let currentFilteredProducts = []; // 當前過濾後的暫存資料 (用來排序)
+        let currentFilter = { value: 'all', type: 'brand' };
 
-        let allProducts = [];
-
-        function parseDiscount(val) {
-            if (!val || val === "") return null;
-            let num = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
-            if (isNaN(num)) return null;
-            if (num > 0 && num < 1) num = num * 100;
-            else if (num > 0 && num < 10) num = num * 10;
-            return "特價再下殺" + Math.round(num) + "折";
-        }
-
-        function formatPrice(val) {
-            if (!val || val === '0' || val === '') return null;
-            const num = parseInt(val.toString().replace(/[^\d]/g, ''), 10);
-            return isNaN(num) ? null : 'NT$ ' + num.toLocaleString();
-        }
-
+        // 初始化
         async function init() {
             const cachedData = localStorage.getItem(CACHE_KEY);
-            const cachedMarquee = localStorage.getItem(MARQUEE_KEY);
-            if (cachedMarquee) {
-                const msgs = JSON.parse(cachedMarquee);
-                document.getElementById('marquee-text').innerText = `🌸 ${msgs.join('　✨　')} 🌸`;
-                document.getElementById('marquee-container').classList.remove('hidden');
-            }
             if (cachedData) {
-                allProducts = JSON.parse(cachedData);
+                const data = JSON.parse(cachedData);
+                rawProducts = data;
+                reversedProducts = [...data].reverse();
                 document.getElementById('loading-state').style.display = 'none';
-                if (allProducts.some(p => p.isSale)) document.getElementById('btn-sale').classList.remove('hidden');
-                updateBrandFilters(allProducts);
-                renderProducts(allProducts);
+                processAndRender();
             }
-            syncData();
+            await syncData();
         }
 
         async function syncData() {
             try {
-                fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(msgs => {
-                    localStorage.setItem(MARQUEE_KEY, JSON.stringify(msgs));
-                    if (msgs.length > 0) {
-                        document.getElementById('marquee-text').innerText = `🌸 ${msgs.join('　✨　')} 🌸`;
-                        document.getElementById('marquee-container').classList.remove('hidden');
-                    }
-                }).catch(()=>{});
-
                 const response = await fetch(`${_0xAPI}?action=get_data`);
                 const rows = await response.json();
                 
-                const newData = rows.filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]).map(row => {
-                    const hasSpecial = row[8] && row[8].toString().trim() !== ''; 
+                const validRows = rows.slice(1).filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]);
+                
+                const newData = validRows.map(row => {
+                    const priceS = row[7] ? parseInt(row[7].toString().replace(/[^\d]/g, ''), 10) : 0;
+                    const priceSpecial = row[8] ? parseInt(row[8].toString().replace(/[^\d]/g, ''), 10) : 0;
+                    // 計算最終顯示價格 (優先使用特價)
+                    const finalPriceNum = priceSpecial > 0 ? priceSpecial : priceS;
+
                     return {
                         id: row[0], 
-                        isSale: row[2]?.toString().trim() !== '', 
-                        saleLabel: row[2]?.toString().trim(),
-                        discount: hasSpecial ? parseDiscount(row[4]) : null, 
+                        saleLabel: row[2]?.toString().trim() || null, 
+                        discount: (row[8] && row[8] !== '') ? parseDiscount(row[4]) : null, 
                         name: row[5], 
                         marketPrice: formatPrice(row[6]), 
                         salePrice: formatPrice(row[7]), 
                         specialPrice: formatPrice(row[8]), 
+                        finalPrice: finalPriceNum, // 用於排序
                         size: row[9], 
                         brand: row[10] || '其他', 
                         postUrl: row[11], 
@@ -161,80 +153,124 @@
                     };
                 });
 
-                newData.sort((a, b) => (b.isSale ? 1 : 0) - (a.isSale ? 1 : 0));
-                const currentCached = localStorage.getItem(CACHE_KEY);
-                if (JSON.stringify(newData) !== currentCached) {
-                    allProducts = newData;
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(allProducts));
+                if (JSON.stringify(newData) !== localStorage.getItem(CACHE_KEY)) {
+                    rawProducts = newData;
+                    reversedProducts = [...newData].reverse();
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawProducts));
                     document.getElementById('loading-state').style.display = 'none';
-                    if (allProducts.some(p => p.isSale)) document.getElementById('btn-sale').classList.remove('hidden');
-                    updateBrandFilters(allProducts);
-                    renderProducts(allProducts);
-                    if(currentCached) {
-                        const toast = document.getElementById('update-toast');
-                        toast.style.display = 'block';
-                        setTimeout(() => toast.style.display = 'none', 3000);
-                    }
+                    processAndRender();
                 }
-            } catch (e) {
-                console.error("Sync Error:", e);
+            } catch (e) { console.error(e); }
+        }
+
+        function processAndRender() {
+            updateFilterButtons();
+            
+            const params = new URLSearchParams(window.location.search);
+            const brandParam = params.get('brand');
+            const saleParam = params.get('sale');
+
+            if (saleParam) {
+                applyFilter(saleParam, 'sale', false);
+            } else if (brandParam) {
+                applyFilter(brandParam, 'brand', false);
+            } else {
+                applyFilter('all', 'brand', false);
             }
         }
 
-        function updateBrandFilters(products) {
-            const container = document.getElementById('brand-filter');
-            const fixedBtns = ['btn-sale', 'btn-all'];
-            Array.from(container.children).forEach(child => {
-                if (!fixedBtns.includes(child.id)) container.removeChild(child);
+        function updateFilterButtons() {
+            const saleContainer = document.getElementById('sale-filter');
+            const brandContainer = document.getElementById('brand-filter');
+            
+            saleContainer.innerHTML = '';
+            Array.from(brandContainer.children).forEach(child => { if (child.id !== 'btn-all') brandContainer.removeChild(child); });
+
+            const sales = [...new Set(rawProducts.map(p => p.saleLabel))].filter(Boolean);
+            const brands = [...new Set(rawProducts.map(p => p.brand))].filter(b => b !== '其他').sort();
+
+            sales.forEach(label => {
+                const btn = createBtn(label, () => applyFilter(label, 'sale'));
+                saleContainer.appendChild(btn);
             });
-            const brands = [...new Set(products.map(p => p.brand))].filter(b => b !== '其他').sort();
+
             brands.forEach(brand => {
-                const btn = document.createElement('button');
-                btn.className = 'brand-btn bg-white px-4 py-1.5 rounded-full border border-pink-50 text-xs text-gray-500 shadow-sm transition-all';
-                btn.innerText = brand;
-                btn.onclick = () => { filterByBrand(brand, btn); gtag('event', 'select_brand', { 'brand_name': brand }); };
-                container.appendChild(btn);
+                const btn = createBtn(brand, () => applyFilter(brand, 'brand'));
+                brandContainer.appendChild(btn);
             });
         }
 
-        function filterByBrand(brand, btn) {
-            document.querySelectorAll('.brand-btn').forEach(b => {
-                b.classList.remove('brand-btn-active');
+        function createBtn(text, onClick) {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn bg-white px-4 py-1.5 rounded-full border border-pink-50 text-xs text-gray-500 shadow-sm transition-all';
+            btn.innerText = text;
+            btn.onclick = onClick;
+            return btn;
+        }
+
+        function applyFilter(value, type, updateURL = true) {
+            currentFilter = { value, type };
+            
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('filter-btn-active');
                 b.classList.add('bg-white', 'text-gray-500');
             });
-            if (btn) btn.classList.add('brand-btn-active');
-            else document.getElementById('btn-all').classList.add('brand-btn-active');
-            renderProducts(brand === 'all' ? allProducts : allProducts.filter(p => p.brand === brand));
+
+            const allBtns = document.querySelectorAll('.filter-btn');
+            allBtns.forEach(b => { if(b.innerText === value) b.classList.add('filter-btn-active'); });
+            if (value === 'all') document.getElementById('btn-all').classList.add('filter-btn-active');
+
+            // 根據類型選擇基礎排序
+            if (value === 'all') {
+                currentFilteredProducts = [...reversedProducts];
+            } else if (type === 'brand') {
+                currentFilteredProducts = reversedProducts.filter(p => p.brand === value);
+            } else {
+                currentFilteredProducts = rawProducts.filter(p => p.saleLabel === value);
+            }
+            
+            // 套用當前選擇的價格排序
+            executeSortAndRender();
+
+            if (updateURL) {
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.delete('brand');
+                newUrl.searchParams.delete('sale');
+                if (value !== 'all') newUrl.searchParams.set(type, value);
+                window.history.pushState({}, '', newUrl);
+            }
         }
 
-        function filterBySale() {
-            document.querySelectorAll('.brand-btn').forEach(b => b.classList.remove('brand-btn-active'));
-            document.getElementById('btn-sale').classList.add('brand-btn-active');
-            renderProducts(allProducts.filter(p => p.isSale));
-            gtag('event', 'view_sale');
+        function handleSortChange() {
+            executeSortAndRender();
+        }
+
+        function executeSortAndRender() {
+            const sortOrder = document.getElementById('sort-order').value;
+            let displayList = [...currentFilteredProducts];
+
+            if (sortOrder === 'price-asc') {
+                displayList.sort((a, b) => a.finalPrice - b.finalPrice);
+            } else if (sortOrder === 'price-desc') {
+                displayList.sort((a, b) => b.finalPrice - a.finalPrice);
+            }
+            // default 則維持 currentFilteredProducts 的原始順序 (已在 applyFilter 處理好)
+
+            renderProducts(displayList);
         }
 
         function renderProducts(products) {
             const container = document.getElementById('product-container');
-            container.innerHTML = products.length === 0 ? '<div class="col-span-full text-center py-20 text-gray-400 text-sm">暫無商品。</div>' : '';
-            const fragment = document.createDocumentFragment();
+            container.innerHTML = products.length === 0 ? '<div class="col-span-full text-center py-20 text-gray-400 text-sm">此分類目前暫無商品。</div>' : '';
+            
             products.forEach(p => {
+                const hasSpecial = p.specialPrice !== null;
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                
-                const hasSpecial = p.specialPrice !== null;
-                const mainDisplayPrice = hasSpecial ? p.specialPrice : p.salePrice;
-                const secondaryPrice = hasSpecial ? p.salePrice : null;
-
-                const targetLink = (p.postUrl && p.postUrl !== '') ? p.postUrl : _FB_URL;
-                const imagesHTML = p.images.length > 0 
-                    ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="handleBuy('${targetLink}', '${p.name}')">`).join('')
-                    : `<img src="https://via.placeholder.com/400?text=聖荷西好物購" class="img-loaded">`;
-
                 card.innerHTML = `
-                    ${p.isSale ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
+                    ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
                     <div class="img-container">
-                        <div class="img-slider">${imagesHTML}</div>
+                        <div class="img-slider">${p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="window.open('${p.postUrl || '#'}', '_blank')">`).join('')}</div>
                         <div class="absolute top-3 right-3"><span class="brand-badge">${p.brand}</span></div>
                     </div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
@@ -242,34 +278,40 @@
                             <h3 class="font-bold text-gray-800 text-lg leading-tight mb-1">
                                 ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
                             </h3>
-                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded uppercase font-medium">SIZE: ${p.size || 'F'}</span>
+                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded uppercase">SIZE: ${p.size || 'F'}</span>
                         </div>
                         <div class="mt-4">
                             <div class="flex flex-col mb-3 gap-0.5">
                                 <span class="text-gray-400 text-[10px] line-through">專櫃價 ${p.marketPrice || '---'}</span>
-                                ${secondaryPrice ? `<span class="text-pink-500 text-xs line-through italic font-medium">特價 ${secondaryPrice}</span>` : ''}
-                                <span class="text-pink-600 font-black text-2xl tracking-tight">
-                                    ${mainDisplayPrice}
-                                </span>
+                                ${hasSpecial ? `<span class="text-pink-500 text-xs line-through italic font-medium">特價 ${p.salePrice}</span>` : ''}
+                                <span class="text-pink-600 font-black text-2xl tracking-tight">${hasSpecial ? p.specialPrice : p.salePrice}</span>
                             </div>
-                            <button onclick="handleBuy('${targetLink}', '${p.name}')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform">立即私訊購買</button>
+                            <button onclick="window.open('${p.postUrl || '#'}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform">立即購買</button>
                         </div>
                     </div>`;
-                fragment.appendChild(card);
+                container.appendChild(card);
             });
-            container.appendChild(fragment);
             
             setTimeout(() => { 
                 document.querySelectorAll('.lazy-img').forEach(img => {
-                    const src = img.getAttribute('data-src');
-                    if (src) { img.src = src; img.onload = () => img.classList.add('img-loaded'); }
+                    img.src = img.getAttribute('data-src');
+                    img.onload = () => img.classList.add('img-loaded');
                 }); 
-            }, 50);
+            }, 100);
         }
 
-        function handleBuy(url, name) {
-            gtag('event', 'click_product', { 'product_name': name });
-            window.open(url, '_blank');
+        function parseDiscount(val) {
+            if (!val) return null;
+            let num = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
+            if (num > 0 && num < 1) num *= 100;
+            else if (num > 0 && num < 10) num *= 10;
+            return "再下殺" + Math.round(num) + "折";
+        }
+        
+        function formatPrice(val) {
+            if (!val || val === '0') return null;
+            const num = parseInt(val.toString().replace(/[^\d]/g, ''), 10);
+            return isNaN(num) ? null : 'NT$ ' + num.toLocaleString();
         }
 
         init();
