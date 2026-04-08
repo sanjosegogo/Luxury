@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <!-- 預連線提升資源加載速度 -->
     <link rel="preconnect" href="https://www.googletagmanager.com">
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -34,16 +33,30 @@
         .flower-bg { background-image: radial-gradient(#ffe4e6 1px, transparent 1px); background-size: 20px 20px; }
         .product-card { border-radius: 1.25rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: white; display: flex; flex-direction: column; position: relative; height: 100%; transition: transform 0.2s; contain: content; }
         .product-card:active { transform: scale(0.98); }
+        
+        /* 圖片容器與滑動優化 */
         .img-container { position: relative; width: 100%; aspect-ratio: 1/1; background-color: #f9fafb; overflow: hidden; }
         .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; }
         .img-slider::-webkit-scrollbar { display: none; }
         .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: contain; width: 100%; height: 100%; opacity: 0; transition: opacity 0.4s ease; cursor: pointer; }
         .img-loaded { opacity: 1 !important; }
+        
+        /* 滑動提示箭頭與指示器 */
+        .slider-hint-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.7); color: #ec4899; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; z-index: 10; pointer-events: none; opacity: 0.8; }
+        .hint-left { left: 8px; }
+        .hint-right { right: 8px; }
+        .slider-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; z-index: 10; }
+        .dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(0,0,0,0.2); }
+        .dot-active { background: #ec4899; width: 12px; border-radius: 10px; }
+
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 4px 12px; border-radius: 0 0 15px 0; font-size: 0.75rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
         .discount-badge { display: inline-block; vertical-align: middle; background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-right: 6px; margin-bottom: 4px; border: 1px solid #fecaca; line-height: 1; }
+        
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
-        .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; will-change: transform; }
+        .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 30s linear infinite; will-change: transform; }
+        .marquee-item { margin-right: 3rem; display: inline-block; }
+        .marquee-link:hover { text-decoration: underline; color: #fff; }
         
         .horizontal-scroll { display: flex; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; gap: 0.5rem; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
         .horizontal-scroll::-webkit-scrollbar { display: none; }
@@ -81,6 +94,7 @@
 </head>
 <body class="flower-bg">
 
+    <!-- 跑馬燈容器 -->
     <div id="marquee-container" class="bg-pink-500 text-white py-2 overflow-hidden hidden shadow-sm">
         <div class="marquee-content text-sm font-bold" id="marquee-text"></div>
     </div>
@@ -144,9 +158,9 @@
             <div class="info-grid shadow-sm">
                 <div class="info-item">
                     <p class="text-pink-500 font-bold flex items-center gap-1 mb-2"><i class="fas fa-map-marker-alt"></i> 門市地址</p>
-                    <p class="text-gray-600 font-medium mb-1">台北市中山區長春路380號</p>
-                    <p class="text-[10px] text-gray-400 mb-3">南京復興站 (捷運文湖/松山新店線)</p>
-                    <div class="mt-auto">
+                    <p class="text-gray-600 font-medium mb-1 text-left">台北市中山區長春路380號</p>
+                    <p class="text-[10px] text-gray-400 mb-3 text-left">南京復興站 (捷運文湖/松山新店線)</p>
+                    <div class="mt-auto text-left">
                         <a href="https://www.google.com/maps/search/?api=1&query=台北市中山區長春路380號" target="_blank" class="inline-flex items-center gap-1.5 text-pink-500 font-bold hover:underline" onclick="trackGAEvent('map_navigation_click', {})">
                             <i class="fas fa-directions"></i> 開啟地圖導航
                         </a>
@@ -155,13 +169,13 @@
 
                 <div class="info-item">
                     <p class="text-pink-500 font-bold flex items-center gap-1 mb-2"><i class="fas fa-clock"></i> 營業時間</p>
-                    <p class="text-gray-600 font-medium mb-1">星期一至星期六</p>
-                    <p class="text-gray-600 font-bold mb-1">11:00-18:00</p>
-                    <p class="text-[10px] text-gray-400 mb-3">其餘時段歡迎預約</p>
-                    <div class="mt-auto">
-                        <p class="text-gray-600 font-bold flex items-center justify-center sm:justify-start gap-1.5">
+                    <p class="text-gray-600 font-medium mb-1 text-left">星期一至星期六</p>
+                    <p class="text-gray-600 font-bold mb-1 text-left">11:00-18:00</p>
+                    <p class="text-[10px] text-gray-400 mb-3 text-left">其餘時段歡迎預約</p>
+                    <div class="mt-auto text-left">
+                        <a href="tel:0227181989" class="text-gray-600 font-bold flex items-center gap-1.5 hover:text-pink-500">
                             <i class="fas fa-phone-alt text-pink-300"></i> 02-27181989
-                        </p>
+                        </a>
                     </div>
                 </div>
 
@@ -172,7 +186,7 @@
                         <span class="bg-green-50 px-2 py-1 rounded text-[10px] border border-green-100 text-green-600 font-bold">Line Pay</span>
                         <span class="bg-red-50 px-2 py-1 rounded text-[10px] border border-red-100 text-red-500 font-bold">街口支付</span>
                     </div>
-                    <div class="mt-auto">
+                    <div class="mt-auto text-left">
                         <p class="text-red-400 font-bold text-[9px] bg-red-50 px-2 py-1 rounded inline-block">現場售出，恕不接受退貨</p>
                     </div>
                 </div>
@@ -188,14 +202,13 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_v27_speed_optimized';
+        const CACHE_KEY = 'sanjose_v28_ux_upgrade';
 
         let allProducts = [];
         let activeFilter = { type: 'all', value: 'all' };
         let currentPage = 1;
         const itemsPerPage = 10;
         
-        // 圖片懶加載觀察者
         const imageObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -220,11 +233,32 @@
             if (brandParam) activeFilter = { type: 'brand', value: brandParam };
             else if (saleParam) activeFilter = { type: 'sale', value: saleParam };
 
-            // 跑馬燈非同步加載，不阻塞主流程
-            fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(msgs => {
-                const data = msgs.map(r => Array.isArray(r) ? r[0] : r).filter(m => m && m.toString().trim() !== "");
-                if (data.length > 0) {
-                    document.getElementById('marquee-text').innerText = `🌸 ${data.join('　✨　')} 🌸`;
+            // 跑馬燈：串接 Google Sheets 結構 [狀態, 文案, 連結]
+            fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(rows => {
+                const container = document.getElementById('marquee-text');
+                container.innerHTML = '';
+                
+                // 過濾狀態為 TRUE (B欄位) 的文案 (C欄位)
+                const activeItems = rows.filter(row => row[0] === true || row[0] === 'TRUE');
+                
+                if (activeItems.length > 0) {
+                    activeItems.forEach(item => {
+                        const span = document.createElement('span');
+                        span.className = 'marquee-item';
+                        const textContent = `✨ ${item[1]} ✨`;
+                        
+                        if (item[2] && item[2].toString().startsWith('http')) {
+                            const link = document.createElement('a');
+                            link.href = item[2];
+                            link.target = '_blank';
+                            link.className = 'marquee-link';
+                            link.innerText = textContent;
+                            span.appendChild(link);
+                        } else {
+                            span.innerText = textContent;
+                        }
+                        container.appendChild(span);
+                    });
                     document.getElementById('marquee-container').classList.remove('hidden');
                 }
             }).catch(() => {});
@@ -309,7 +343,8 @@
             else if (activeFilter.type === 'brand') filtered = allProducts.filter(p => p.brand === activeFilter.value);
             else if (activeFilter.type === 'sale') filtered = allProducts.filter(p => p.saleLabel === activeFilter.value);
 
-            document.getElementById('count-text').innerText = `精選 ${filtered.length} 件歐美好物`;
+            // 修改文案為「嚴選精品」
+            document.getElementById('count-text').innerText = `精選 ${filtered.length} 件嚴選精品`;
             document.getElementById('total-product-count').classList.remove('hidden');
 
             switch(sortOrder) {
@@ -333,6 +368,87 @@
                 const scrollTarget = document.getElementById('brand-filter').offsetTop - 80;
                 window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
             }
+        }
+
+        function renderProducts(items) {
+            const container = document.getElementById('product-container');
+            if (items.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400">目前沒有符合條件的商品。</div>';
+                return;
+            }
+            
+            const fragment = document.createDocumentFragment();
+            items.forEach(p => {
+                const targetUrl = p.postUrl || _FB_URL;
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // 判斷是否需要顯示滑動指示 UI
+                const showSliderUI = p.images.length > 1;
+                
+                card.innerHTML = `
+                    ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
+                    <div class="img-container">
+                        ${showSliderUI ? `<div class="slider-hint-arrow hint-right"><i class="fas fa-chevron-right"></i></div>` : ''}
+                        <div class="img-slider" onscroll="handleSliderScroll(this)">
+                            ${p.images.length > 0 ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="trackGAEvent('product_image_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}' }); window.open('${targetUrl}', '_blank')">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
+                        </div>
+                        ${showSliderUI ? `
+                            <div class="slider-dots">
+                                ${p.images.map((_, i) => `<div class="dot ${i === 0 ? 'dot-active' : ''}"></div>`).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="absolute top-3 right-3"><span class="brand-badge">${p.brand}</span></div>
+                        ${p.postUrl ? `<div class="video-hint" onclick="window.open('${targetUrl}', '_blank')"><i class="fas fa-play-circle text-pink-400 text-sm pulse-icon"></i><span class="font-bold">查看社團最新影音/照片</span></div>` : ''}
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-[14px] leading-relaxed mb-2">
+                                ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
+                            </h3>
+                            <span class="bg-gray-50 text-gray-400 text-[9px] px-1.5 py-0.5 rounded border border-gray-100 uppercase font-bold">SIZE: ${p.size}</span>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex flex-col mb-3">
+                                <span class="text-gray-400 text-[10px] line-through">專櫃價 ${p.marketPrice || '---'}</span>
+                                ${p.specialPrice ? `<span class="text-pink-400 text-[10px] line-through italic">特價 ${p.salePrice}</span>` : ''}
+                                <span class="text-pink-600 font-black text-xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
+                            </div>
+                            <button onclick="trackGAEvent('purchase_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}', price: ${p.finalPrice} }); window.open('${targetUrl}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
+                        </div>
+                    </div>`;
+                fragment.appendChild(card);
+            });
+            container.appendChild(fragment);
+            container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
+        }
+
+        // 處理圖片滑動時的指示器切換
+        function handleSliderScroll(el) {
+            const index = Math.round(el.scrollLeft / el.clientWidth);
+            const dots = el.parentElement.querySelectorAll('.dot');
+            const arrowRight = el.parentElement.querySelector('.hint-right');
+            const arrowLeft = el.parentElement.querySelector('.hint-left') || document.createElement('div');
+            
+            // 初始化左箭頭
+            if (index > 0 && !el.parentElement.querySelector('.hint-left')) {
+                arrowLeft.className = 'slider-hint-arrow hint-left';
+                arrowLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                el.parentElement.appendChild(arrowLeft);
+            } else if (index === 0 && el.parentElement.querySelector('.hint-left')) {
+                el.parentElement.querySelector('.hint-left').remove();
+            }
+
+            // 右箭頭隱藏邏輯
+            if (arrowRight) {
+                if (index >= dots.length - 1) arrowRight.style.display = 'none';
+                else arrowRight.style.display = 'flex';
+            }
+
+            dots.forEach((dot, i) => {
+                if (i === index) dot.classList.add('dot-active');
+                else dot.classList.remove('dot-active');
+            });
         }
 
         function renderPagination(totalPages) {
@@ -392,51 +508,6 @@
             url.searchParams.set('sort', sortVal);
             window.history.pushState({}, '', url);
             updateDisplay(true);
-        }
-
-        function renderProducts(items) {
-            const container = document.getElementById('product-container');
-            if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400">目前沒有符合條件的商品。</div>';
-                return;
-            }
-            
-            const fragment = document.createDocumentFragment();
-            items.forEach(p => {
-                const targetUrl = p.postUrl || _FB_URL;
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
-                    <div class="img-container">
-                        <div class="img-slider">
-                            ${p.images.length > 0 ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="trackGAEvent('product_image_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}' }); window.open('${targetUrl}', '_blank')">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
-                        </div>
-                        <div class="absolute top-3 right-3"><span class="brand-badge">${p.brand}</span></div>
-                        ${p.postUrl ? `<div class="video-hint" onclick="window.open('${targetUrl}', '_blank')"><i class="fas fa-play-circle text-pink-400 text-sm pulse-icon"></i><span class="font-bold">查看社團最新影音/照片</span></div>` : ''}
-                    </div>
-                    <div class="p-4 flex-grow flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-800 text-[14px] leading-relaxed mb-2">
-                                ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
-                            </h3>
-                            <span class="bg-gray-50 text-gray-400 text-[9px] px-1.5 py-0.5 rounded border border-gray-100 uppercase font-bold">SIZE: ${p.size}</span>
-                        </div>
-                        <div class="mt-4">
-                            <div class="flex flex-col mb-3">
-                                <span class="text-gray-400 text-[10px] line-through">專櫃價 ${p.marketPrice || '---'}</span>
-                                ${p.specialPrice ? `<span class="text-pink-400 text-[10px] line-through italic">特價 ${p.salePrice}</span>` : ''}
-                                <span class="text-pink-600 font-black text-xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
-                            </div>
-                            <button onclick="trackGAEvent('purchase_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}', price: ${p.finalPrice} }); window.open('${targetUrl}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
-                        </div>
-                    </div>`;
-                fragment.appendChild(card);
-            });
-            container.appendChild(fragment);
-
-            // 啟動懶加載
-            container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
         }
 
         function createBtn(label, fn, filterType, filterVal) {
