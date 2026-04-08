@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -22,25 +23,45 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdf8f5; -webkit-tap-highlight-color: transparent; }
         .flower-bg { background-image: radial-gradient(#ffe4e6 1px, transparent 1px); background-size: 20px 20px; }
         .product-card { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; display: flex; flex-direction: column; position: relative; }
+        
         .img-container { position: relative; aspect-ratio: 1/1; background-color: #f3f4f6; overflow: hidden; }
         .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; }
         .img-slider::-webkit-scrollbar { display: none; }
-        .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: cover; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease; }
+        .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: cover; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease; cursor: pointer; }
         .img-loaded { opacity: 1 !important; }
+
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 4px 12px; border-radius: 0 0 15px 0; font-size: 0.8rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
         .discount-badge { background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 800; margin-right: 6px; vertical-align: middle; display: inline-block; border: 1px solid #fecaca; }
-        
+
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; }
+
         .filter-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; border-color: #ec4899 !important; }
-        #update-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 16px; border-radius: 50px; font-size: 12px; z-index: 100; display: none; }
-        
-        /* 排序下拉選單樣式 */
         .sort-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ec4899'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1rem; padding-right: 2rem; appearance: none; }
+        
+        #update-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 16px; border-radius: 50px; font-size: 12px; z-index: 100; display: none; }
+
+        .video-hint {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 100px; 
+            font-size: 0.7rem;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 20;
+            display: flex;
+            align-items: center; 
+            gap: 5px; 
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="flower-bg">
@@ -53,32 +74,30 @@
         <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2 cursor-pointer" onclick="location.href=location.pathname">
                 <span class="text-2xl">🦋</span>
-                <h1 class="text-xl font-bold text-gray-800">聖荷西好物購🇺🇸</h1>
+                <div class="flex flex-col">
+                    <h1 class="text-xl font-bold text-gray-800 leading-none">聖荷西好物購🇺🇸</h1>
+                    <span class="text-[10px] text-pink-400 font-medium tracking-widest uppercase">San Jose Goodies</span>
+                </div>
             </div>
-            <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md">
-                加入社團
+            <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md shadow-pink-200">
+                <i class="fab fa-facebook"></i> 加入社團
             </a>
         </div>
     </header>
 
-    <!-- 分類過濾區 -->
     <div class="max-w-screen-md mx-auto px-4 mt-6">
         <div class="mb-2 text-[10px] text-pink-400 font-bold uppercase tracking-widest">限時活動分類</div>
-        <div id="sale-filter" class="flex flex-wrap gap-2 mb-4">
-            <!-- 動態生成特賣分類按鈕 -->
-        </div>
+        <div id="sale-filter" class="flex flex-wrap gap-2 mb-4"></div>
 
         <div class="mb-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">品牌分類</div>
         <div id="brand-filter" class="flex flex-wrap gap-2 pb-2 border-b border-pink-50">
-            <button onclick="applyFilter('all', 'brand')" id="btn-all" class="filter-btn filter-btn-active px-4 py-1.5 rounded-full border border-pink-100 bg-white text-xs shadow-sm">所有商品</button>
-            <!-- 動態生成品牌按鈕 -->
+            <button onclick="applyFilter('all', 'brand')" id="btn-all" class="filter-btn filter-btn-active px-4 py-1.5 rounded-full border border-pink-100 bg-white text-xs shadow-sm transition-all">所有商品</button>
         </div>
 
-        <!-- 排序選單 -->
         <div class="flex justify-end mt-4">
             <div class="flex items-center gap-2">
-                <span class="text-[10px] text-gray-400 font-bold uppercase">排序方式:</span>
-                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-3 py-1 text-xs text-gray-600 font-medium focus:outline-none focus:ring-1 focus:ring-pink-300">
+                <span class="text-[10px] text-gray-400 font-bold uppercase">排序:</span>
+                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-3 py-1 text-xs text-gray-600 font-medium focus:outline-none">
                     <option value="default">預設排序</option>
                     <option value="date-new">最新上架</option>
                     <option value="date-old">依上架順序</option>
@@ -92,29 +111,54 @@
     <main class="max-w-screen-md mx-auto px-4 py-4">
         <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div id="loading-state" class="col-span-full text-center py-24 text-gray-400">
-                <div class="animate-spin inline-block w-8 h-8 border-4 border-pink-200 border-t-pink-500 rounded-full mb-4"></div>
-                <p class="text-sm font-medium">正在取得最新優惠...</p>
+                <div class="animate-bounce mb-4 text-4xl">✈️</div>
+                <p class="text-sm font-medium tracking-widest">正在為你連線聖荷西，挑選最划算的精品...</p>
             </div>
         </div>
     </main>
 
-    <footer class="text-center py-12 bg-white/50 mt-10 text-gray-400 text-xs border-t border-pink-50">
+    <footer class="text-center py-12 bg-white/50 mt-10 text-gray-400 text-xs leading-relaxed border-t border-pink-50">
+        <div class="mb-4 text-pink-200 text-xl">✨ ✨ ✨</div>
         <p class="font-bold text-gray-600 text-sm mb-1">聖荷西好物購🇺🇸</p>
-        <p>台北市長春路380號1樓</p>
+        <p class="mb-4 text-gray-500">精品代購・嚴選品質・100% 正品保障</p>
+        
+        <div class="bg-white mx-auto max-w-xs p-4 rounded-2xl shadow-sm border border-pink-50 text-gray-500 mb-6">
+            <a href="https://www.google.com/maps/search/?api=1&query=台北市長春路380號1樓" target="_blank" class="block group">
+                <p class="font-bold mb-1 text-pink-500"><i class="fas fa-map-marker-alt mr-1"></i> 長春路總店</p>
+                <p>台北市長春路380號1樓</p>
+                <p class="text-[10px] text-pink-400 mt-2 font-bold italic underline">點擊開啟地圖導航</p>
+            </a>
+        </div>
+
+        <div class="max-w-md mx-auto px-6 text-[10px] text-gray-400 opacity-80 leading-normal space-y-2">
+            <p>※ 本網頁所載產品圖示及影音僅供導覽參考，實際到貨細節將依原廠或採購專櫃實物為準。</p>
+            <p>※ 若本網頁相關圖文內容有任何權利疑義，敬請透過私訊與我們聯繫，我們將立即協助處理執行。</p>
+        </div>
     </footer>
 
     <div id="update-toast">✨ 發現新折扣，已為你更新</div>
 
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
-        const CACHE_KEY = 'sanjose_products_cache_v5'; 
-        let rawProducts = []; // 原始順序資料 (正向，由舊到新)
-        let reversedProducts = []; // 反向順序資料 (最新在前)
-        let currentFilteredProducts = []; // 當前過濾後的暫存資料 (用來排序)
+        const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
+        const CACHE_KEY = 'sanjose_products_cache_v9'; 
+
+        let rawProducts = []; 
+        let reversedProducts = []; 
+        let currentFilteredProducts = []; 
         let currentFilter = { value: 'all', type: 'brand' };
 
-        // 初始化
         async function init() {
+            // 跑馬燈
+            fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(msgs => {
+                const data = msgs.map(r => Array.isArray(r) ? r[0] : r).filter(m => m && m.trim() !== "");
+                if (data.length > 0) {
+                    document.getElementById('marquee-text').innerText = `🌸 ${data.join('　✨　')} 🌸`;
+                    document.getElementById('marquee-container').classList.remove('hidden');
+                }
+            });
+
+            // 快取
             const cachedData = localStorage.getItem(CACHE_KEY);
             if (cachedData) {
                 const data = JSON.parse(cachedData);
@@ -131,36 +175,51 @@
                 const response = await fetch(`${_0xAPI}?action=get_data`);
                 const rows = await response.json();
                 
+                // 排除標題，抓取庫存(B)=TRUE且有品名(F)的資料
                 const validRows = rows.slice(1).filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]);
                 
                 const newData = validRows.map((row, index) => {
-                    const priceS = row[7] ? parseInt(row[7].toString().replace(/[^\d]/g, ''), 10) : 0;
-                    const priceSpecial = row[8] ? parseInt(row[8].toString().replace(/[^\d]/g, ''), 10) : 0;
-                    const finalPriceNum = priceSpecial > 0 ? priceSpecial : priceS;
+                    const priceG = row[6] ? parseInt(row[6].toString().replace(/[^\d]/g, ''), 10) : 0; // G：專櫃價
+                    const priceH = row[7] ? parseInt(row[7].toString().replace(/[^\d]/g, ''), 10) : 0; // H：特價
+                    const priceI = row[8] ? parseInt(row[8].toString().replace(/[^\d]/g, ''), 10) : 0; // I：特賣金額
+
+                    // 邏輯：有特賣金額(I)優先使用，否則使用特價(H)
+                    const finalPriceNum = priceI > 0 ? priceI : priceH;
+                    
+                    // 折數邏輯：有特賣金額(I)顯示 E 欄，沒有則顯示 D 欄
+                    const displayDiscount = priceI > 0 ? row[4] : row[3];
 
                     return {
-                        id: row[0], 
-                        originalIndex: index, 
-                        saleLabel: row[2]?.toString().trim() || null, 
-                        discount: (row[8] && row[8] !== '') ? parseDiscount(row[4]) : null, 
-                        name: row[5], 
-                        marketPrice: formatPrice(row[6]), 
-                        salePrice: formatPrice(row[7]), 
-                        specialPrice: formatPrice(row[8]), 
-                        finalPrice: finalPriceNum, 
-                        size: row[9], 
-                        brand: row[10] || '其他', 
-                        postUrl: row[11], 
-                        images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http')) 
+                        id: row[0],
+                        originalIndex: index,
+                        saleLabel: row[2]?.toString().trim() || null, // C：特賣分類
+                        discount: displayDiscount ? parseDiscount(displayDiscount) : null,
+                        name: row[5], // F：品名
+                        marketPrice: formatPrice(row[6]), // G：專櫃價
+                        salePrice: formatPrice(row[7]), // H：特價
+                        specialPrice: formatPrice(row[8]), // I：特賣金額
+                        finalPrice: finalPriceNum,
+                        size: row[9], // J：尺寸
+                        brand: row[10] || '其他', // K：品牌
+                        postUrl: row[11], // L：臉書連結
+                        // 圖片從 M 欄 (index 12) 開始
+                        images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http'))
                     };
                 });
 
                 if (JSON.stringify(newData) !== localStorage.getItem(CACHE_KEY)) {
+                    const wasEmpty = !localStorage.getItem(CACHE_KEY);
                     rawProducts = newData;
                     reversedProducts = [...newData].reverse();
                     localStorage.setItem(CACHE_KEY, JSON.stringify(rawProducts));
                     document.getElementById('loading-state').style.display = 'none';
                     processAndRender();
+                    
+                    if (!wasEmpty) {
+                        const toast = document.getElementById('update-toast');
+                        toast.style.display = 'block';
+                        setTimeout(() => toast.style.display = 'none', 3000);
+                    }
                 }
             } catch (e) { console.error(e); }
         }
@@ -172,13 +231,9 @@
             const brandParam = params.get('brand');
             const saleParam = params.get('sale');
 
-            if (saleParam) {
-                applyFilter(saleParam, 'sale', false);
-            } else if (brandParam) {
-                applyFilter(brandParam, 'brand', false);
-            } else {
-                applyFilter('all', 'brand', false);
-            }
+            if (saleParam) applyFilter(saleParam, 'sale', false);
+            else if (brandParam) applyFilter(brandParam, 'brand', false);
+            else applyFilter('all', 'brand', false);
         }
 
         function updateFilterButtons() {
@@ -192,13 +247,11 @@
             const brands = [...new Set(rawProducts.map(p => p.brand))].filter(b => b !== '其他').sort();
 
             sales.forEach(label => {
-                const btn = createBtn(label, () => applyFilter(label, 'sale'));
-                saleContainer.appendChild(btn);
+                saleContainer.appendChild(createBtn(label, () => applyFilter(label, 'sale')));
             });
 
             brands.forEach(brand => {
-                const btn = createBtn(brand, () => applyFilter(brand, 'brand'));
-                brandContainer.appendChild(btn);
+                brandContainer.appendChild(createBtn(brand, () => applyFilter(brand, 'brand')));
             });
         }
 
@@ -218,8 +271,7 @@
                 b.classList.add('bg-white', 'text-gray-500');
             });
 
-            const allBtns = document.querySelectorAll('.filter-btn');
-            allBtns.forEach(b => { if(b.innerText === value) b.classList.add('filter-btn-active'); });
+            document.querySelectorAll('.filter-btn').forEach(b => { if(b.innerText === value) b.classList.add('filter-btn-active'); });
             if (value === 'all') document.getElementById('btn-all').classList.add('filter-btn-active');
 
             if (value === 'all') {
@@ -241,23 +293,16 @@
             }
         }
 
-        function handleSortChange() {
-            executeSortAndRender();
-        }
+        function handleSortChange() { executeSortAndRender(); }
 
         function executeSortAndRender() {
             const sortOrder = document.getElementById('sort-order').value;
             let displayList = [...currentFilteredProducts];
 
-            if (sortOrder === 'price-asc') {
-                displayList.sort((a, b) => a.finalPrice - b.finalPrice);
-            } else if (sortOrder === 'price-desc') {
-                displayList.sort((a, b) => b.finalPrice - a.finalPrice);
-            } else if (sortOrder === 'date-new') {
-                displayList.sort((a, b) => b.originalIndex - a.originalIndex);
-            } else if (sortOrder === 'date-old') {
-                displayList.sort((a, b) => a.originalIndex - b.originalIndex);
-            }
+            if (sortOrder === 'price-asc') displayList.sort((a, b) => a.finalPrice - b.finalPrice);
+            else if (sortOrder === 'price-desc') displayList.sort((a, b) => b.finalPrice - a.finalPrice);
+            else if (sortOrder === 'date-new') displayList.sort((a, b) => b.originalIndex - a.originalIndex);
+            else if (sortOrder === 'date-old') displayList.sort((a, b) => a.originalIndex - b.originalIndex);
 
             renderProducts(displayList);
         }
@@ -268,28 +313,32 @@
             
             products.forEach(p => {
                 const hasSpecial = p.specialPrice !== null;
+                const targetUrl = p.postUrl || _FB_URL;
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.innerHTML = `
                     ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
                     <div class="img-container">
-                        <div class="img-slider">${p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="window.open('${p.postUrl || '#'}', '_blank')">`).join('')}</div>
+                        <div class="img-slider">
+                            ${p.images.length > 0 ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="window.open('${targetUrl}', '_blank')">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img" onclick="window.open('${targetUrl}', '_blank')">`}
+                        </div>
                         <div class="absolute top-3 right-3"><span class="brand-badge">${p.brand}</span></div>
+                        ${p.postUrl ? `<div class="video-hint"><i class="fas fa-play-circle text-pink-400"></i><span>看影音</span></div>` : ''}
                     </div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
                             <h3 class="font-bold text-gray-800 text-lg leading-tight mb-1">
                                 ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
                             </h3>
-                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded uppercase">SIZE: ${p.size || 'F'}</span>
+                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded uppercase font-bold">SIZE: ${p.size || 'F'}</span>
                         </div>
                         <div class="mt-4">
-                            <div class="flex flex-col mb-3 gap-0.5">
+                            <div class="flex flex-col mb-3">
                                 <span class="text-gray-400 text-[10px] line-through">專櫃價 ${p.marketPrice || '---'}</span>
                                 ${hasSpecial ? `<span class="text-pink-500 text-xs line-through italic font-medium">特價 ${p.salePrice}</span>` : ''}
-                                <span class="text-pink-600 font-black text-2xl tracking-tight">${hasSpecial ? p.specialPrice : p.salePrice}</span>
+                                <span class="text-pink-600 font-black text-2xl tracking-tight">${hasSpecial ? p.specialPrice : (p.salePrice || '電洽')}</span>
                             </div>
-                            <button onclick="window.open('${p.postUrl || '#'}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform">立即購買</button>
+                            <button onclick="window.open('${targetUrl}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform shadow-pink-100">立即私訊購買</button>
                         </div>
                     </div>`;
                 container.appendChild(card);
@@ -297,22 +346,27 @@
             
             setTimeout(() => { 
                 document.querySelectorAll('.lazy-img').forEach(img => {
-                    img.src = img.getAttribute('data-src');
-                    img.onload = () => img.classList.add('img-loaded');
+                    const src = img.getAttribute('data-src');
+                    if (src) {
+                        img.src = src;
+                        img.onload = () => img.classList.add('img-loaded');
+                    }
                 }); 
             }, 100);
         }
 
         function parseDiscount(val) {
             if (!val) return null;
-            let num = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
-            if (num > 0 && num < 1) num *= 100;
-            else if (num > 0 && num < 10) num *= 10;
-            return "再下殺" + Math.round(num) + "折";
+            let numStr = val.toString().replace(/[^0-9.]/g, '');
+            let num = parseFloat(numStr);
+            if (!num) return null;
+            if (num > 0 && num < 1) num *= 10;
+            else if (num >= 10) num /= 10;
+            return num + "折";
         }
         
         function formatPrice(val) {
-            if (!val || val === '0') return null;
+            if (!val || val === '0' || val === '') return null;
             const num = parseInt(val.toString().replace(/[^\d]/g, ''), 10);
             return isNaN(num) ? null : 'NT$ ' + num.toLocaleString();
         }
@@ -321,3 +375,5 @@
     </script>
 </body>
 </html>
+
+```
