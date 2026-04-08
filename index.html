@@ -81,12 +81,17 @@
         .sort-select { 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ec4899'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
             background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1rem; 
-            padding-right: 2rem; appearance: none; font-size: 0.85rem;
+            padding-right: 2rem; appearance: none; font-size: 0.85rem; height: 38px;
         }
 
-        .layout-toggle-btn { background: white; border: 1px solid #fce7f3; color: #ec4899; padding: 6px 12px; border-radius: 8px; font-size: 1rem; transition: all 0.2s; }
-        .layout-toggle-btn.active { background: #ec4899; color: white; border-color: #ec4899; }
+        /* 排版切換容器與按鈕高度校準 */
+        .control-group { height: 38px; display: flex; align-items: center; }
+        .layout-toggle-container { display: flex; background: white; border: 1px solid #fce7f3; border-radius: 8px; padding: 3px; height: 100%; box-sizing: border-box; }
         
+        @media (min-width: 768px) {
+            .layout-toggle-container { display: none !important; }
+        }
+
         .video-hint { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); color: white; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; position: absolute; bottom: 12px; left: 12px; z-index: 20; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .pulse-icon { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
@@ -120,17 +125,15 @@
             .info-item:last-child { border-radius: 0 1rem 1rem 0; border-right: 1px solid #ffe4e6; }
         }
         
-        .product-count-badge { background: #fff1f2; color: #db2777; font-size: 12px; padding: 5px 12px; border-radius: 10px; border: 1px solid #ffe4e6; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+        .product-count-badge { background: #fff1f2; color: #db2777; font-size: 12px; padding: 0 12px; border-radius: 8px; border: 1px solid #ffe4e6; font-weight: 800; display: flex; align-items: center; gap: 6px; height: 38px; }
     </style>
 </head>
 <body class="flower-bg">
 
-    <!-- 跑馬燈容器 -->
     <div id="marquee-container" class="bg-pink-500 text-white py-3 overflow-hidden hidden shadow-sm">
         <div class="marquee-content text-base font-bold" id="marquee-text"></div>
     </div>
 
-    <!-- 圖片放大預覽容器 -->
     <div id="lightbox" onclick="closeLightbox(event)">
         <div class="lightbox-content">
             <div id="lightbox-counter" class="lightbox-counter">1 / 1</div>
@@ -164,37 +167,38 @@
             <button onclick="applyFilter('all', 'all')" id="btn-all" data-filter-type="all" data-filter-val="all" class="filter-btn filter-btn-active">所有商品</button>
         </div>
 
-        <div class="flex justify-between items-end mt-5">
-            <div id="total-product-count" class="product-count-badge hidden">
+        <!-- 控制欄位：對齊高度 38px -->
+        <div class="flex justify-between items-center mt-5 gap-2">
+            <div id="total-product-count" class="product-count-badge hidden flex-shrink-0">
                 <i class="fas fa-shopping-bag text-[10px]"></i>
                 <span id="count-text"></span>
             </div>
-            <div class="flex flex-col items-end gap-2">
-                <div class="flex items-center gap-3">
-                    <!-- 排版切換按鈕 -->
-                    <div class="flex bg-white rounded-lg border border-pink-100 p-1">
-                        <button id="layout-single" onclick="toggleLayout('single')" class="w-10 h-8 flex items-center justify-center rounded text-pink-500 bg-pink-50 active:scale-95">
-                            <i class="fas fa-square"></i>
-                        </button>
-                        <button id="layout-grid" onclick="toggleLayout('grid')" class="w-10 h-8 flex items-center justify-center rounded text-gray-400 active:scale-95">
-                            <i class="fas fa-th-large"></i>
-                        </button>
-                    </div>
-                    <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-2 py-1.5 text-gray-600 font-medium focus:outline-none">
-                        <option value="default">預設排序</option>
-                        <option value="date-new">最新上架</option>
-                        <option value="date-old">依上架順序</option>
-                        <option value="price-asc">價格：低至高</option>
-                        <option value="price-desc">價格：高至低</option>
-                    </select>
+            
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <!-- 行動版專屬排版切換 -->
+                <div class="layout-toggle-container flex-shrink-0">
+                    <button id="layout-single" onclick="toggleLayout('single')" class="w-9 h-full flex items-center justify-center rounded text-gray-400 active:scale-95 transition-colors">
+                        <i class="fas fa-square"></i>
+                    </button>
+                    <button id="layout-grid" onclick="toggleLayout('grid')" class="w-9 h-full flex items-center justify-center rounded text-pink-500 bg-pink-50 active:scale-95 transition-colors">
+                        <i class="fas fa-th-large"></i>
+                    </button>
                 </div>
+                
+                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-2 py-1.5 text-gray-600 font-medium focus:outline-none flex-shrink-0">
+                    <option value="default">預設排序</option>
+                    <option value="date-new">最新上架</option>
+                    <option value="date-old">依上架順序</option>
+                    <option value="price-asc">價格：低至高</option>
+                    <option value="price-desc">價格：高至低</option>
+                </select>
             </div>
         </div>
     </div>
 
     <main class="max-w-screen-md mx-auto px-4 py-5">
-        <!-- 產品容器預設為 1 欄或雙欄由 JS 控制 class -->
-        <div id="product-container" class="grid grid-cols-1 gap-6 min-h-[300px]">
+        <!-- 產品容器 -->
+        <div id="product-container" class="grid min-h-[300px]">
             <div id="loading-state" class="col-span-full text-center py-24 text-gray-400">
                 <div class="spinner"></div>
                 <p class="text-base font-medium tracking-widest px-4 text-pink-500/80">正在連線聖荷西，挑選最划算的精品 ✈️</p>
@@ -256,12 +260,12 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_v31_safe_link';
+        const CACHE_KEY = 'sanjose_v32_safe_link';
 
         let allProducts = [];
         let activeFilter = { type: 'all', value: 'all' };
         let currentPage = 1;
-        let layoutMode = 'single'; // 'single' or 'grid'
+        let layoutMode = 'grid'; // 預設雙欄並排 (配合 PC 需求)
         const itemsPerPage = 10;
         
         const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -290,27 +294,33 @@
             }
         }
 
-        function toggleLayout(mode) {
-            layoutMode = mode;
+        // 初始化 Layout，如果是手機且使用者沒切過，可維持 grid。
+        function applyLayoutToUI() {
             const container = document.getElementById('product-container');
             const singleBtn = document.getElementById('layout-single');
             const gridBtn = document.getElementById('layout-grid');
 
-            if (mode === 'grid') {
+            if (layoutMode === 'grid') {
                 container.classList.remove('grid-cols-1');
-                container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                container.classList.add('grid-cols-2', 'md:grid-cols-3', 'grid-layout-2', 'gap-3');
                 gridBtn.classList.add('text-pink-500', 'bg-pink-50');
                 singleBtn.classList.remove('text-pink-500', 'bg-pink-50');
                 singleBtn.classList.add('text-gray-400');
             } else {
                 container.classList.add('grid-cols-1');
-                container.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                container.classList.remove('grid-cols-2', 'md:grid-cols-3', 'grid-layout-2', 'gap-3');
                 singleBtn.classList.add('text-pink-500', 'bg-pink-50');
                 gridBtn.classList.remove('text-pink-500', 'bg-pink-50');
                 gridBtn.classList.add('text-gray-400');
             }
+        }
+
+        function toggleLayout(mode) {
+            layoutMode = mode;
+            applyLayoutToUI();
             updateDisplay(false);
-            trackGAEvent('layout_change', { mode });
+            // GA 追蹤切換排版
+            trackGAEvent('layout_change', { mode: mode });
         }
 
         async function init() {
@@ -321,6 +331,9 @@
             const saleParam = params.get('sale');
             if (brandParam) activeFilter = { type: 'brand', value: brandParam };
             else if (saleParam) activeFilter = { type: 'sale', value: saleParam };
+
+            // 預設執行一次排版套用
+            applyLayoutToUI();
 
             fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(rows => {
                 const container = document.getElementById('marquee-text');
