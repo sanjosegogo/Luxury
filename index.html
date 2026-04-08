@@ -35,14 +35,14 @@
         .product-card:active { transform: scale(0.98); }
         
         .img-container { position: relative; width: 100%; aspect-ratio: 1/1; background-color: #f9fafb; overflow: hidden; }
-        .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; }
+        .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; scroll-behavior: smooth; }
         .img-slider::-webkit-scrollbar { display: none; }
-        .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: contain; width: 100%; height: 100%; opacity: 0; transition: opacity 0.4s ease; cursor: pointer; }
+        .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: contain; width: 100%; height: 100%; opacity: 0; transition: opacity 0.4s ease; cursor: zoom-in; }
         .img-loaded { opacity: 1 !important; }
         
-        .slider-hint-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.7); color: #ec4899; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 10; pointer-events: none; opacity: 0.8; }
-        .hint-left { left: 8px; }
-        .hint-right { right: 8px; }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); color: #ec4899; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; z-index: 10; cursor: pointer; border: 1px solid #fce7f3; }
+        .nav-left { left: 8px; }
+        .nav-right { right: 8px; }
         .slider-dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 10; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.2); }
         .dot-active { background: #ec4899; width: 14px; border-radius: 10px; }
@@ -77,6 +77,19 @@
         .pulse-icon { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
+        /* Lightbox 樣式 */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+        #lightbox.active { display: flex; opacity: 1; }
+        .lightbox-content { width: 100%; height: 100%; position: relative; display: flex; flex-direction: column; }
+        .lightbox-slider { flex-grow: 1; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; scroll-behavior: smooth; }
+        .lightbox-slider::-webkit-scrollbar { display: none; }
+        .lightbox-slider img { flex: 0 0 100%; height: 100%; object-fit: contain; scroll-snap-align: start; }
+        .lightbox-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; z-index: 1010; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); color: white; background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; z-index: 1010; }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+        .lightbox-hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.7); font-size: 14px; background: rgba(0,0,0,0.5); padding: 8px 20px; border-radius: 20px; z-index: 1010; pointer-events: none; }
+
         .info-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; text-align: left; margin-top: 2rem; }
         @media (min-width: 640px) { .info-grid { grid-template-columns: repeat(3, 1fr); gap: 0; } }
         .info-item { background: #fff; border: 1px solid #ffe4e6; padding: 1.75rem; display: flex; flex-direction: column; height: 100%; }
@@ -96,6 +109,17 @@
     <!-- 跑馬燈容器 -->
     <div id="marquee-container" class="bg-pink-500 text-white py-3 overflow-hidden hidden shadow-sm">
         <div class="marquee-content text-base font-bold" id="marquee-text"></div>
+    </div>
+
+    <!-- 圖片放大預覽容器 -->
+    <div id="lightbox" onclick="closeLightbox(event)">
+        <div class="lightbox-content">
+            <div class="lightbox-close" onclick="closeLightbox(event)"><i class="fas fa-times"></i></div>
+            <div class="lightbox-nav lightbox-prev" onclick="lightboxMove(-1, event)"><i class="fas fa-chevron-left"></i></div>
+            <div class="lightbox-nav lightbox-next" onclick="lightboxMove(1, event)"><i class="fas fa-chevron-right"></i></div>
+            <div id="lightbox-slider" class="lightbox-slider"></div>
+            <div class="lightbox-hint"><i class="fas fa-hand-pointer mr-2"></i>可以左右滑動或點擊按鈕切換</div>
+        </div>
     </div>
 
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-pink-100">
@@ -201,7 +225,7 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_v29_safe_link';
+        const CACHE_KEY = 'sanjose_v30_safe_link';
 
         let allProducts = [];
         let activeFilter = { type: 'all', value: 'all' };
@@ -222,7 +246,6 @@
             });
         }, { rootMargin: '100px' });
 
-        // 防止多開空白分頁的開啟函式
         function safeOpenLink(url, eventName, params) {
             if (eventName) trackGAEvent(eventName, params);
             if (url) {
@@ -385,16 +408,17 @@
                 const targetUrl = p.postUrl || _FB_URL;
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                const showSliderUI = p.images.length > 1;
+                const hasMultipleImages = p.images.length > 1;
                 
                 card.innerHTML = `
                     ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
                     <div class="img-container">
-                        ${showSliderUI ? `<div class="slider-hint-arrow hint-right"><i class="fas fa-chevron-right"></i></div>` : ''}
+                        <div class="slider-nav nav-left" onclick="handleNavClick(this, -1, event)" style="display:none"><i class="fas fa-chevron-left"></i></div>
+                        <div class="slider-nav nav-right" onclick="handleNavClick(this, 1, event)" ${hasMultipleImages ? '' : 'style="display:none"'}><i class="fas fa-chevron-right"></i></div>
                         <div class="img-slider" onscroll="handleSliderScroll(this)">
-                            ${p.images.length > 0 ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="safeOpenLink('${targetUrl}', 'product_image_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}' })">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
+                            ${p.images.length > 0 ? p.images.map((img, idx) => `<img data-src="${img}" class="lazy-img" onclick="openLightbox(${JSON.stringify(p.images).replace(/"/g, '&quot;')}, ${idx})">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
                         </div>
-                        ${showSliderUI ? `
+                        ${hasMultipleImages ? `
                             <div class="slider-dots">
                                 ${p.images.map((_, i) => `<div class="dot ${i === 0 ? 'dot-active' : ''}"></div>`).join('')}
                             </div>
@@ -424,26 +448,73 @@
             container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
         }
 
+        // 滑動邏輯與無窮滑動模擬
         function handleSliderScroll(el) {
             const index = Math.round(el.scrollLeft / el.clientWidth);
             const dots = el.parentElement.querySelectorAll('.dot');
-            const arrowRight = el.parentElement.querySelector('.hint-right');
-            const arrowLeft = el.parentElement.querySelector('.hint-left') || document.createElement('div');
-            if (index > 0 && !el.parentElement.querySelector('.hint-left')) {
-                arrowLeft.className = 'slider-hint-arrow hint-left';
-                arrowLeft.innerHTML = '<i class="fas fa-chevron-left"></i>';
-                el.parentElement.appendChild(arrowLeft);
-            } else if (index === 0 && el.parentElement.querySelector('.hint-left')) {
-                el.parentElement.querySelector('.hint-left').remove();
-            }
-            if (arrowRight) {
-                if (index >= dots.length - 1) arrowRight.style.display = 'none';
-                else arrowRight.style.display = 'flex';
-            }
+            const navLeft = el.parentElement.querySelector('.nav-left');
+            const navRight = el.parentElement.querySelector('.nav-right');
+            
             dots.forEach((dot, i) => {
                 if (i === index) dot.classList.add('dot-active');
                 else dot.classList.remove('dot-active');
             });
+
+            if(dots.length > 1) {
+                // 如果在第一張，往左滑按鈕可以設計成跳到最後一張(循環)，或是隱藏。依照需求改為顯示
+                navLeft.style.display = 'flex';
+                navRight.style.display = 'flex';
+            }
+        }
+
+        function handleNavClick(btn, dir, event) {
+            event.stopPropagation();
+            const slider = btn.parentElement.querySelector('.img-slider');
+            const dots = btn.parentElement.querySelectorAll('.dot');
+            let current = Math.round(slider.scrollLeft / slider.clientWidth);
+            let next = current + dir;
+
+            // 循環邏輯
+            if (next < 0) next = dots.length - 1;
+            if (next >= dots.length) next = 0;
+
+            slider.scrollTo({ left: next * slider.clientWidth, behavior: 'smooth' });
+        }
+
+        // Lightbox 放大功能
+        function openLightbox(images, startIdx) {
+            const lightbox = document.getElementById('lightbox');
+            const slider = document.getElementById('lightbox-slider');
+            slider.innerHTML = images.map(src => `<img src="${src}" alt="preview">`).join('');
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // 延遲定位以確保渲染
+            setTimeout(() => {
+                slider.scrollTo({ left: startIdx * slider.clientWidth, behavior: 'auto' });
+            }, 50);
+        }
+
+        function closeLightbox(e) {
+            if (e.target.id === 'lightbox' || e.target.classList.contains('fa-times') || e.target.classList.contains('lightbox-close')) {
+                const lightbox = document.getElementById('lightbox');
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function lightboxMove(dir, e) {
+            if(e) e.stopPropagation();
+            const slider = document.getElementById('lightbox-slider');
+            const imgs = slider.querySelectorAll('img');
+            let current = Math.round(slider.scrollLeft / slider.clientWidth);
+            let next = current + dir;
+
+            // 循環邏輯
+            if (next < 0) next = imgs.length - 1;
+            if (next >= imgs.length) next = 0;
+
+            slider.scrollTo({ left: next * slider.clientWidth, behavior: 'smooth' });
         }
 
         function renderPagination(totalPages) {
