@@ -47,6 +47,7 @@
         .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,0,0,0.2); }
         .dot-active { background: #ec4899; width: 14px; border-radius: 10px; }
 
+        .img-count-tag { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.4); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; z-index: 20; pointer-events: none; }
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 6px 14px; border-radius: 0 0 15px 0; font-size: 0.85rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
         .discount-badge { display: inline-block; vertical-align: middle; background: #fee2e2; color: #ef4444; font-size: 12px; padding: 3px 8px; border-radius: 4px; font-weight: 800; margin-right: 6px; margin-bottom: 4px; border: 1px solid #fecaca; line-height: 1; }
@@ -115,10 +116,10 @@
     <div id="lightbox" onclick="closeLightbox(event)">
         <div class="lightbox-content">
             <div class="lightbox-close" onclick="closeLightbox(event)"><i class="fas fa-times"></i></div>
-            <div class="lightbox-nav lightbox-prev" onclick="lightboxMove(-1, event)"><i class="fas fa-chevron-left"></i></div>
-            <div class="lightbox-nav lightbox-next" onclick="lightboxMove(1, event)"><i class="fas fa-chevron-right"></i></div>
+            <div id="lightbox-prev" class="lightbox-nav lightbox-prev" onclick="lightboxMove(-1, event)"><i class="fas fa-chevron-left"></i></div>
+            <div id="lightbox-next" class="lightbox-nav lightbox-next" onclick="lightboxMove(1, event)"><i class="fas fa-chevron-right"></i></div>
             <div id="lightbox-slider" class="lightbox-slider"></div>
-            <div class="lightbox-hint"><i class="fas fa-hand-pointer mr-2"></i>可以左右滑動或點擊按鈕切換</div>
+            <div id="lightbox-hint" class="lightbox-hint"><i class="fas fa-hand-pointer mr-2"></i>可以左右滑動或點擊按鈕切換</div>
         </div>
     </div>
 
@@ -225,7 +226,7 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_v30_safe_link';
+        const CACHE_KEY = 'sanjose_v31_safe_link';
 
         let allProducts = [];
         let activeFilter = { type: 'all', value: 'all' };
@@ -246,11 +247,20 @@
             });
         }, { rootMargin: '100px' });
 
+        // 優化跳轉邏輯，減少空白分頁
         function safeOpenLink(url, eventName, params) {
             if (eventName) trackGAEvent(eventName, params);
-            if (url) {
-                const win = window.open(url, '_blank', 'noopener,noreferrer');
-                if (win) win.opener = null;
+            if (!url) return;
+            
+            // 判斷是否為行動裝置
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 行動裝置優先使用 location.href，這在 App 跳轉中體驗較佳
+                window.location.href = url;
+            } else {
+                // 桌機端使用 _blank
+                window.open(url, '_blank', 'noopener');
             }
         }
 
@@ -409,13 +419,15 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 const hasMultipleImages = p.images.length > 1;
+                const totalImgCount = p.images.length;
                 
                 card.innerHTML = `
                     ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
                     <div class="img-container">
+                        <div class="img-count-tag"><span class="current-idx">1</span>/${totalImgCount}</div>
                         <div class="slider-nav nav-left" onclick="handleNavClick(this, -1, event)" style="display:none"><i class="fas fa-chevron-left"></i></div>
                         <div class="slider-nav nav-right" onclick="handleNavClick(this, 1, event)" ${hasMultipleImages ? '' : 'style="display:none"'}><i class="fas fa-chevron-right"></i></div>
-                        <div class="img-slider" onscroll="handleSliderScroll(this)">
+                        <div class="img-slider" onscroll="handleSliderScroll(this)" style="${!hasMultipleImages ? 'overflow-x: hidden;' : ''}">
                             ${p.images.length > 0 ? p.images.map((img, idx) => `<img data-src="${img}" class="lazy-img" onclick="openLightbox(${JSON.stringify(p.images).replace(/"/g, '&quot;')}, ${idx})">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
                         </div>
                         ${hasMultipleImages ? `
@@ -448,20 +460,23 @@
             container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
         }
 
-        // 滑動邏輯與無窮滑動模擬
+        // 滑動邏輯優化
         function handleSliderScroll(el) {
             const index = Math.round(el.scrollLeft / el.clientWidth);
-            const dots = el.parentElement.querySelectorAll('.dot');
-            const navLeft = el.parentElement.querySelector('.nav-left');
-            const navRight = el.parentElement.querySelector('.nav-right');
+            const parent = el.parentElement;
+            const dots = parent.querySelectorAll('.dot');
+            const navLeft = parent.querySelector('.nav-left');
+            const navRight = parent.querySelector('.nav-right');
+            const countLabel = parent.querySelector('.current-idx');
             
+            if (countLabel) countLabel.innerText = index + 1;
+
             dots.forEach((dot, i) => {
                 if (i === index) dot.classList.add('dot-active');
                 else dot.classList.remove('dot-active');
             });
 
             if(dots.length > 1) {
-                // 如果在第一張，往左滑按鈕可以設計成跳到最後一張(循環)，或是隱藏。依照需求改為顯示
                 navLeft.style.display = 'flex';
                 navRight.style.display = 'flex';
             }
@@ -471,6 +486,8 @@
             event.stopPropagation();
             const slider = btn.parentElement.querySelector('.img-slider');
             const dots = btn.parentElement.querySelectorAll('.dot');
+            if (dots.length <= 1) return; // 單張圖片不執行
+
             let current = Math.round(slider.scrollLeft / slider.clientWidth);
             let next = current + dir;
 
@@ -485,11 +502,22 @@
         function openLightbox(images, startIdx) {
             const lightbox = document.getElementById('lightbox');
             const slider = document.getElementById('lightbox-slider');
+            const prevBtn = document.getElementById('lightbox-prev');
+            const nextBtn = document.getElementById('lightbox-next');
+            const hint = document.getElementById('lightbox-hint');
+
             slider.innerHTML = images.map(src => `<img src="${src}" alt="preview">`).join('');
+            
+            // 如果只有一張，隱藏控制元件
+            const isSingle = images.length <= 1;
+            prevBtn.style.display = isSingle ? 'none' : 'flex';
+            nextBtn.style.display = isSingle ? 'none' : 'flex';
+            hint.style.display = isSingle ? 'none' : 'block';
+            slider.style.overflowX = isSingle ? 'hidden' : 'auto';
+
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            // 延遲定位以確保渲染
             setTimeout(() => {
                 slider.scrollTo({ left: startIdx * slider.clientWidth, behavior: 'auto' });
             }, 50);
@@ -507,10 +535,11 @@
             if(e) e.stopPropagation();
             const slider = document.getElementById('lightbox-slider');
             const imgs = slider.querySelectorAll('img');
+            if (imgs.length <= 1) return;
+
             let current = Math.round(slider.scrollLeft / slider.clientWidth);
             let next = current + dir;
 
-            // 循環邏輯
             if (next < 0) next = imgs.length - 1;
             if (next >= imgs.length) next = 0;
 
