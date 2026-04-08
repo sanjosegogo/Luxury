@@ -37,6 +37,12 @@
         .filter-btn:hover { border-color: #f9a8d4; color: #db2777; }
         .filter-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; border-color: #ec4899 !important; }
         
+        /* 分頁按鈕 */
+        .page-btn { background: white; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1px solid #fce7f3; font-size: 0.8rem; color: #6b7280; transition: all 0.15s; font-weight: 500; }
+        .page-btn:hover { border-color: #f9a8d4; color: #db2777; background: #fff1f2; }
+        .page-btn-active { background-color: #ec4899 !important; color: white !important; border-color: #ec4899 !important; font-weight: bold; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3); }
+        .page-btn-disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
         .sort-select { 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ec4899'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
             background-position: right 0.4rem center; background-repeat: no-repeat; background-size: 0.9rem; 
@@ -49,6 +55,9 @@
 
         .product-title { line-height: 1.6 !important; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; text-align: left; padding: 1.5rem; background: #fff5f6; border-radius: 1.5rem; margin-top: 2rem; }
+        
+        /* 商品計數顯示 */
+        .product-count-badge { background: #fff1f2; color: #db2777; font-size: 11px; padding: 4px 12px; border-radius: 99px; border: 1px solid #ffe4e6; font-weight: 800; margin-left: auto; display: flex; align-items: center; gap: 4px; }
     </style>
 </head>
 <body class="flower-bg">
@@ -74,7 +83,13 @@
         <div class="mb-2 text-[10px] text-pink-400 font-bold uppercase tracking-widest">限時活動分類</div>
         <div id="sale-filter" class="flex flex-wrap gap-2 mb-4"></div>
 
-        <div class="mb-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">品牌分類</div>
+        <div class="flex items-center mb-2">
+            <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">品牌分類</div>
+            <div id="total-product-count" class="product-count-badge hidden">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="count-text"></span>
+            </div>
+        </div>
         <div id="brand-filter" class="flex flex-wrap gap-2 pb-2 border-b border-pink-50">
             <button onclick="applyFilter('all', 'all')" id="btn-all" data-filter-type="all" data-filter-val="all" class="filter-btn filter-btn-active">所有商品</button>
         </div>
@@ -99,6 +114,11 @@
                 <div class="animate-bounce mb-4 text-4xl">✈️</div>
                 <p class="text-sm font-medium tracking-widest px-4">正在為你連線聖荷西，挑選最划算的精品...</p>
             </div>
+        </div>
+        
+        <!-- 分頁導覽列 -->
+        <div id="pagination-container" class="flex justify-center items-center flex-wrap gap-2 mt-12 mb-4 hidden">
+            <!-- 分頁按鈕由 JS 生成 -->
         </div>
     </main>
 
@@ -147,10 +167,14 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_v23_fixed_70_issue';
+        const CACHE_KEY = 'sanjose_v25_pagination_update';
 
         let allProducts = [];
         let activeFilter = { type: 'all', value: 'all' };
+        
+        // 分頁相關參數
+        let currentPage = 1;
+        const itemsPerPage = 10;
 
         async function init() {
             const params = new URLSearchParams(window.location.search);
@@ -241,7 +265,9 @@
             updateFilterButtonsUI();
         }
 
-        function updateDisplay() {
+        function updateDisplay(resetPage = true) {
+            if (resetPage) currentPage = 1;
+
             const container = document.getElementById('product-container');
             const sortOrder = document.getElementById('sort-order').value;
             container.innerHTML = '';
@@ -254,6 +280,12 @@
             } else if (activeFilter.type === 'sale') {
                 filtered = allProducts.filter(p => p.saleLabel === activeFilter.value);
             }
+
+            // 更新總計數字
+            const countBadge = document.getElementById('total-product-count');
+            const countText = document.getElementById('count-text');
+            countText.innerText = `共有 ${filtered.length} 件好物`;
+            countBadge.classList.remove('hidden');
 
             switch(sortOrder) {
                 case 'price-asc':
@@ -271,8 +303,53 @@
                     filtered.sort((a, b) => b.originalIndex - a.originalIndex);
             }
             
-            renderProducts(filtered);
+            // 分頁邏輯
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedItems = filtered.slice(startIndex, startIndex + itemsPerPage);
+
+            renderProducts(paginatedItems);
+            renderPagination(totalPages);
             updateFilterButtonsUI();
+            
+            // 如果不是重置頁面（點擊分頁按鈕時），平滑捲動回分類區域
+            if (!resetPage) {
+                const scrollTarget = document.getElementById('brand-filter').offsetTop - 80;
+                window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+            }
+        }
+
+        function renderPagination(totalPages) {
+            const container = document.getElementById('pagination-container');
+            if (totalPages <= 1) {
+                container.classList.add('hidden');
+                return;
+            }
+            container.classList.remove('hidden');
+            container.innerHTML = '';
+
+            // 上一頁
+            const prevBtn = document.createElement('button');
+            prevBtn.className = `page-btn ${currentPage === 1 ? 'page-btn-disabled' : ''}`;
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.onclick = () => { if(currentPage > 1) { currentPage--; updateDisplay(false); } };
+            container.appendChild(prevBtn);
+
+            // 頁碼
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${currentPage === i ? 'page-btn-active' : ''}`;
+                pageBtn.innerText = i;
+                pageBtn.onclick = () => { if(currentPage !== i) { currentPage = i; updateDisplay(false); } };
+                container.appendChild(pageBtn);
+            }
+
+            // 下一頁
+            const nextBtn = document.createElement('button');
+            nextBtn.className = `page-btn ${currentPage === totalPages ? 'page-btn-disabled' : ''}`;
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.onclick = () => { if(currentPage < totalPages) { currentPage++; updateDisplay(false); } };
+            container.appendChild(nextBtn);
         }
 
         function updateFilterButtonsUI() {
@@ -294,7 +371,7 @@
             url.searchParams.delete('sale');
             if (type !== 'all') url.searchParams.set(type, val);
             window.history.pushState({}, '', url);
-            updateDisplay();
+            updateDisplay(true);
         }
 
         function handleSortChange() {
@@ -302,7 +379,7 @@
             const url = new URL(window.location);
             url.searchParams.set('sort', sortVal);
             window.history.pushState({}, '', url);
-            updateDisplay();
+            updateDisplay(true);
         }
 
         function renderProducts(items) {
@@ -371,54 +448,39 @@
         
         function parseDiscount(val, hasSpecialPrice) {
             if (!val) return null;
-            // 取得純數字與小數點
             let rawNum = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
             if (!rawNum || isNaN(rawNum)) return null;
 
             let discountVal = rawNum;
-            
-            // 標準化數值：確保無論 0.7, 7, 70 都能轉為適合處理的單位
             if (discountVal > 0 && discountVal < 1) {
-                // 0.7 -> 7
                 discountVal = discountVal * 10;
             } else if (discountVal >= 100) {
-                // 如果是 750 (代表 75%) 或是誤植，除以 100 變回 7.5 類型
                 discountVal = discountVal / 100;
             }
-            // 注意：若輸入是 70 或 75，此處先不動，後面根據範圍判斷
 
             let displayStr = "";
-
-            // 規則 1: 處理 70.47% 或 0.70 這種「個位數折數」
-            // 如果數值在 70.0 ~ 79.99 之間，或是 7.0 ~ 7.99 之間
-            if ((discountVal >= 70 && discountVal < 80) || (discountVal >= 7 && discountVal < 8)) {
-                // 判定為 7折 類型
-                // 若是 70.47 則除以 10 變 7.047
-                let normalized = discountVal >= 10 ? discountVal / 10 : discountVal;
-                displayStr = Math.floor(normalized) + "折";
+            if (discountVal >= 10 && discountVal < 100) {
+                let firstDigit = Math.floor(discountVal / 10);
+                let secondDigit = discountVal % 10;
+                if (secondDigit < 1) {
+                    displayStr = firstDigit + "折";
+                } else {
+                    displayStr = Math.floor(discountVal) + "折";
+                }
             } 
-            // 規則 2: 處理 75% 或 74.5% 這種「雙位數折數」
-            else if (discountVal >= 10 && discountVal < 100) {
-                // 直接取整數，例如 74.5 -> 74折, 75 -> 75折
-                displayStr = Math.floor(discountVal) + "折";
-            }
-            // 規則 3: 其他 (如 0.75 -> 7.5 -> 75折)
             else if (discountVal > 0 && discountVal < 10) {
-                displayStr = Math.floor(discountVal * 10) + "折";
+                if (discountVal % 1 === 0) {
+                    displayStr = Math.floor(discountVal) + "折";
+                } else {
+                    displayStr = Math.floor(discountVal * 10) + "折";
+                }
             }
             else {
                 return null;
             }
             
-            // 安全機制：過濾掉 0折 或 100折 等異常
             if (displayStr === "0折") return null;
-
-            // 套用文字規則：僅在有特賣金額時顯示「特價再下殺」
-            if (hasSpecialPrice) {
-                return "特價再下殺 " + displayStr;
-            } else {
-                return displayStr;
-            }
+            return hasSpecialPrice ? "特價再下殺 " + displayStr : displayStr;
         }
 
         window.onload = init;
