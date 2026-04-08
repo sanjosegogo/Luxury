@@ -1,19 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <!-- Google tag (gtag.js) -->
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNN5GCVZ54"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-WNN5GCVZ54', {
-        'cookie_prefix': 'sanjose',
-        'cookie_domain': 'auto',
-        'cookie_flags': 'SameSite=None;Secure',
-        'send_page_view': true
-      });
+      gtag('config', 'G-WNN5GCVZ54');
     </script>
     
     <meta charset="UTF-8">
@@ -23,45 +17,38 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
-        
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdf8f5; -webkit-tap-highlight-color: transparent; }
         .flower-bg { background-image: radial-gradient(#ffe4e6 1px, transparent 1px); background-size: 20px 20px; }
-        .product-card { border-radius: 1.5rem; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; display: flex; flex-direction: column; position: relative; }
-        
-        .img-container { position: relative; aspect-ratio: 1/1; background-color: #f3f4f6; overflow: hidden; }
+        .product-card { border-radius: 1.25rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: white; display: flex; flex-direction: column; position: relative; height: 100%; transition: transform 0.2s; }
+        .product-card:active { transform: scale(0.98); }
+        .img-container { position: relative; width: 100%; aspect-ratio: 1/1; background-color: #f9fafb; overflow: hidden; }
         .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; }
         .img-slider::-webkit-scrollbar { display: none; }
-        .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: cover; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease; cursor: pointer; }
+        .img-slider img { flex: 0 0 100%; scroll-snap-align: start; object-fit: contain; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease; cursor: pointer; }
         .img-loaded { opacity: 1 !important; }
-
-        .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
-        .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 4px 12px; border-radius: 0 0 15px 0; font-size: 0.8rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
-        .discount-badge { background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 800; margin-right: 6px; vertical-align: middle; display: inline-block; border: 1px solid #fecaca; }
-
+        .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; color: #d946ef; backdrop-filter: blur(4px); }
+        .sale-tag { background: linear-gradient(45deg, #f43f5e, #fb7185); color: white; padding: 4px 12px; border-radius: 0 0 15px 0; font-size: 0.75rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
+        .discount-badge { display: inline-block; vertical-align: middle; background: #fee2e2; color: #ef4444; font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: 800; margin-right: 6px; margin-bottom: 4px; border: 1px solid #fecaca; line-height: 1; }
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; }
-
-        .filter-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; border-color: #ec4899 !important; }
-        .sort-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ec4899'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1rem; padding-right: 2rem; appearance: none; }
         
-        #update-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 16px; border-radius: 50px; font-size: 12px; z-index: 100; display: none; }
-
-        .video-hint {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 100px; 
-            font-size: 0.7rem;
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            z-index: 20;
-            display: flex;
-            align-items: center; 
-            gap: 5px; 
-            pointer-events: none;
+        /* 按鈕樣式 */
+        .filter-btn { background: white; padding: 6px 16px; border-radius: 9999px; border: 1px solid #fce7f3; font-size: 0.75rem; color: #6b7280; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: all 0.15s; cursor: pointer; }
+        .filter-btn:hover { border-color: #f9a8d4; color: #db2777; }
+        .filter-btn-active { background-color: #ec4899 !important; color: #ffffff !important; font-weight: 700 !important; border-color: #ec4899 !important; }
+        
+        .sort-select { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ec4899'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+            background-position: right 0.4rem center; background-repeat: no-repeat; background-size: 0.9rem; 
+            padding-right: 1.8rem; appearance: none; 
         }
+        
+        .video-hint { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); color: white; padding: 4px 10px; border-radius: 100px; font-size: 0.65rem; position: absolute; bottom: 10px; left: 10px; z-index: 20; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; }
+        .pulse-icon { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .product-title { line-height: 1.6 !important; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; text-align: left; padding: 1.5rem; background: #fff5f6; border-radius: 1.5rem; margin-top: 2rem; }
     </style>
 </head>
 <body class="flower-bg">
@@ -70,18 +57,16 @@
         <div class="marquee-content text-sm font-bold" id="marquee-text"></div>
     </div>
 
-    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-pink-100">
-        <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="location.href=location.pathname">
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-pink-100">
+        <div class="max-w-screen-md mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
                 <span class="text-2xl">🦋</span>
                 <div class="flex flex-col">
-                    <h1 class="text-xl font-bold text-gray-800 leading-none">聖荷西好物購🇺🇸</h1>
-                    <span class="text-[10px] text-pink-400 font-medium tracking-widest uppercase">San Jose Goodies</span>
+                    <h1 class="text-lg font-bold text-gray-800 leading-none">聖荷西好物購🇺🇸</h1>
+                    <span class="text-[9px] text-pink-400 font-medium tracking-widest uppercase">San Jose Goodies</span>
                 </div>
             </div>
-            <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-md shadow-pink-200">
-                <i class="fab fa-facebook"></i> 加入社團
-            </a>
+            <a href="https://www.facebook.com/groups/183038802197503/" target="_blank" class="bg-pink-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-md shadow-pink-100">加入社團</a>
         </div>
     </header>
 
@@ -91,81 +76,111 @@
 
         <div class="mb-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">品牌分類</div>
         <div id="brand-filter" class="flex flex-wrap gap-2 pb-2 border-b border-pink-50">
-            <button onclick="applyFilter('all', 'brand')" id="btn-all" class="filter-btn filter-btn-active px-4 py-1.5 rounded-full border border-pink-100 bg-white text-xs shadow-sm transition-all">所有商品</button>
+            <button onclick="applyFilter('all', 'all')" id="btn-all" data-filter-type="all" data-filter-val="all" class="filter-btn filter-btn-active">所有商品</button>
         </div>
 
-        <div class="flex justify-end mt-4">
+        <div class="flex justify-end items-center mt-4">
             <div class="flex items-center gap-2">
                 <span class="text-[10px] text-gray-400 font-bold uppercase">排序:</span>
-                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-3 py-1 text-xs text-gray-600 font-medium focus:outline-none">
+                <select id="sort-order" onchange="handleSortChange()" class="sort-select bg-white border border-pink-100 rounded-lg px-2 py-1 text-xs text-gray-600 font-medium focus:outline-none">
                     <option value="default">預設排序</option>
                     <option value="date-new">最新上架</option>
                     <option value="date-old">依上架順序</option>
-                    <option value="price-asc">價格：由低到高</option>
-                    <option value="price-desc">價格：由高到低</option>
+                    <option value="price-asc">價格：低至高</option>
+                    <option value="price-desc">價格：高至低</option>
                 </select>
             </div>
         </div>
     </div>
 
     <main class="max-w-screen-md mx-auto px-4 py-4">
-        <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div id="product-container" class="grid grid-cols-1 sm:grid-cols-2 gap-5 min-h-[300px]">
             <div id="loading-state" class="col-span-full text-center py-24 text-gray-400">
                 <div class="animate-bounce mb-4 text-4xl">✈️</div>
-                <p class="text-sm font-medium tracking-widest">正在為你連線聖荷西，挑選最划算的精品...</p>
+                <p class="text-sm font-medium tracking-widest px-4">正在為你連線聖荷西，挑選最划算的精品...</p>
             </div>
         </div>
     </main>
 
-    <footer class="text-center py-12 bg-white/50 mt-10 text-gray-400 text-xs leading-relaxed border-t border-pink-50">
-        <div class="mb-4 text-pink-200 text-xl">✨ ✨ ✨</div>
-        <p class="font-bold text-gray-600 text-sm mb-1">聖荷西好物購🇺🇸</p>
-        <p class="mb-4 text-gray-500">精品代購・嚴選品質・100% 正品保障</p>
-        
-        <div class="bg-white mx-auto max-w-xs p-4 rounded-2xl shadow-sm border border-pink-50 text-gray-500 mb-6">
-            <a href="https://www.google.com/maps/search/?api=1&query=台北市長春路380號1樓" target="_blank" class="block group">
-                <p class="font-bold mb-1 text-pink-500"><i class="fas fa-map-marker-alt mr-1"></i> 長春路總店</p>
-                <p>台北市長春路380號1樓</p>
-                <p class="text-[10px] text-pink-400 mt-2 font-bold italic underline">點擊開啟地圖導航</p>
-            </a>
-        </div>
+    <footer class="max-w-screen-md mx-auto px-4 py-12 text-center text-gray-400 text-xs">
+        <div class="border-t border-pink-100 pt-12">
+            <p class="font-bold text-gray-600 text-sm mb-1">聖荷西好物購🇺🇸</p>
+            <p class="mb-4 text-gray-500">精品代購・嚴選品質・100% 正品保障</p>
+            
+            <div class="info-grid">
+                <div class="space-y-2">
+                    <p class="text-pink-500 font-bold flex items-center gap-1"><i class="fas fa-map-marker-alt"></i> 門市地址</p>
+                    <p class="text-gray-600 font-medium">台北市中山區長春路380號</p>
+                    <p class="text-[10px] text-gray-400">南京復興站 (捷運文湖/松山新店線)</p>
+                    <a href="https://www.google.com/maps/search/?api=1&query=台北市中山區長春路380號" target="_blank" class="inline-flex items-center gap-1.5 text-pink-500 font-bold hover:underline">
+                        <i class="fas fa-directions"></i> 點我開啟 Google Maps 導航
+                    </a>
+                </div>
 
-        <div class="max-w-md mx-auto px-6 text-[10px] text-gray-400 opacity-80 leading-normal space-y-2">
-            <p>※ 本網頁所載產品圖示及影音僅供導覽參考，實際到貨細節將依原廠或採購專櫃實物為準。</p>
-            <p>※ 若本網頁相關圖文內容有任何權利疑義，敬請透過私訊與我們聯繫，我們將立即協助處理執行。</p>
+                <div class="space-y-2 border-l border-pink-100 pl-4 sm:border-l-0 sm:pl-0">
+                    <p class="text-pink-500 font-bold flex items-center gap-1"><i class="fas fa-clock"></i> 營業時間</p>
+                    <p class="text-gray-600 font-medium">星期一至星期六 11:00-18:00</p>
+                    <p class="text-[10px] text-gray-400">歡迎來電或私訊預約其他時段</p>
+                    <p class="text-gray-600 font-bold flex items-center gap-1.5">
+                        <i class="fas fa-phone-alt text-pink-300"></i> 02-27181989
+                    </p>
+                </div>
+
+                <div class="space-y-2 md:col-span-1 border-l border-pink-100 pl-4">
+                    <p class="text-pink-500 font-bold flex items-center gap-1"><i class="fas fa-wallet"></i> 消費方式</p>
+                    <div class="flex gap-2 mb-1">
+                        <span class="bg-white px-2 py-0.5 rounded text-[10px] border border-pink-100">現金</span>
+                        <span class="bg-white px-2 py-0.5 rounded text-[10px] border border-pink-100 text-green-600">Line Pay</span>
+                        <span class="bg-white px-2 py-0.5 rounded text-[10px] border border-pink-100 text-red-500">街口支付</span>
+                    </div>
+                    <p class="text-red-400 font-bold text-[10px] bg-red-50 px-2 py-1 rounded inline-block">※ 現場商品售出，恕不接受退貨</p>
+                </div>
+            </div>
+
+            <div class="mt-10 px-6 text-[10px] text-gray-400 opacity-80 leading-normal space-y-2">
+                <p>※ 本網頁所載產品圖示及影音僅供導覽參考，實際到貨細節將依原廠 or 採購專櫃實物為準。</p>
+                <p>※ 若本網頁相關圖文內容有任何權利疑義，敬請透過私訊與我們聯繫，我們將立即協助處理執行。</p>
+            </div>
         </div>
     </footer>
-
-    <div id="update-toast">✨ 發現新折扣，已為你更新</div>
 
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://www.facebook.com/groups/183038802197503/';
-        const CACHE_KEY = 'sanjose_products_cache_v9'; 
+        const CACHE_KEY = 'sanjose_v23_fixed_70_issue';
 
-        let rawProducts = []; 
-        let reversedProducts = []; 
-        let currentFilteredProducts = []; 
-        let currentFilter = { value: 'all', type: 'brand' };
+        let allProducts = [];
+        let activeFilter = { type: 'all', value: 'all' };
 
         async function init() {
-            // 跑馬燈
+            const params = new URLSearchParams(window.location.search);
+            const sortParam = params.get('sort');
+            const validSorts = ['default', 'date-new', 'date-old', 'price-asc', 'price-desc'];
+            if (sortParam && validSorts.includes(sortParam)) {
+                document.getElementById('sort-order').value = sortParam;
+            }
+
+            const brandParam = params.get('brand');
+            const saleParam = params.get('sale');
+            if (brandParam) activeFilter = { type: 'brand', value: brandParam };
+            else if (saleParam) activeFilter = { type: 'sale', value: saleParam };
+
             fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(msgs => {
-                const data = msgs.map(r => Array.isArray(r) ? r[0] : r).filter(m => m && m.trim() !== "");
+                const data = msgs.map(r => Array.isArray(r) ? r[0] : r).filter(m => m && m.toString().trim() !== "");
                 if (data.length > 0) {
                     document.getElementById('marquee-text').innerText = `🌸 ${data.join('　✨　')} 🌸`;
                     document.getElementById('marquee-container').classList.remove('hidden');
                 }
-            });
+            }).catch(() => {});
 
-            // 快取
-            const cachedData = localStorage.getItem(CACHE_KEY);
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                rawProducts = data;
-                reversedProducts = [...data].reverse();
-                document.getElementById('loading-state').style.display = 'none';
-                processAndRender();
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                try {
+                    allProducts = JSON.parse(cached);
+                    document.getElementById('loading-state').style.display = 'none';
+                    buildFilterButtons();
+                    updateDisplay();
+                } catch(e) { localStorage.removeItem(CACHE_KEY); }
             }
             await syncData();
         }
@@ -174,145 +189,131 @@
             try {
                 const response = await fetch(`${_0xAPI}?action=get_data`);
                 const rows = await response.json();
-                
-                // 排除標題，抓取庫存(B)=TRUE且有品名(F)的資料
+                if (!Array.isArray(rows) || rows.length < 2) return;
+
                 const validRows = rows.slice(1).filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]);
-                
                 const newData = validRows.map((row, index) => {
-                    const priceG = row[6] ? parseInt(row[6].toString().replace(/[^\d]/g, ''), 10) : 0; // G：專櫃價
-                    const priceH = row[7] ? parseInt(row[7].toString().replace(/[^\d]/g, ''), 10) : 0; // H：特價
-                    const priceI = row[8] ? parseInt(row[8].toString().replace(/[^\d]/g, ''), 10) : 0; // I：特賣金額
-
-                    // 邏輯：有特賣金額(I)優先使用，否則使用特價(H)
-                    const finalPriceNum = priceI > 0 ? priceI : priceH;
-                    
-                    // 折數邏輯：有特賣金額(I)顯示 E 欄，沒有則顯示 D 欄
+                    const priceI = parseNum(row[8]);
+                    const finalPriceNum = priceI > 0 ? priceI : parseNum(row[7]);
                     const displayDiscount = priceI > 0 ? row[4] : row[3];
-
                     return {
-                        id: row[0],
-                        originalIndex: index,
-                        saleLabel: row[2]?.toString().trim() || null, // C：特賣分類
-                        discount: displayDiscount ? parseDiscount(displayDiscount) : null,
-                        name: row[5], // F：品名
-                        marketPrice: formatPrice(row[6]), // G：專櫃價
-                        salePrice: formatPrice(row[7]), // H：特價
-                        specialPrice: formatPrice(row[8]), // I：特賣金額
-                        finalPrice: finalPriceNum,
-                        size: row[9], // J：尺寸
-                        brand: row[10] || '其他', // K：品牌
-                        postUrl: row[11], // L：臉書連結
-                        // 圖片從 M 欄 (index 12) 開始
+                        id: row[0], originalIndex: index, saleLabel: row[2]?.toString().trim() || null,
+                        discount: displayDiscount ? parseDiscount(displayDiscount, priceI > 0) : null,
+                        name: row[5].toString(), marketPrice: formatPrice(row[6]), salePrice: formatPrice(row[7]),
+                        specialPrice: formatPrice(row[8]), finalPrice: finalPriceNum, size: row[9] || 'F',
+                        brand: row[10] || '其他', postUrl: row[11],
                         images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http'))
                     };
                 });
-
-                if (JSON.stringify(newData) !== localStorage.getItem(CACHE_KEY)) {
-                    const wasEmpty = !localStorage.getItem(CACHE_KEY);
-                    rawProducts = newData;
-                    reversedProducts = [...newData].reverse();
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(rawProducts));
+                
+                const newJson = JSON.stringify(newData);
+                if (newJson !== localStorage.getItem(CACHE_KEY)) {
+                    localStorage.setItem(CACHE_KEY, newJson);
+                    allProducts = newData;
                     document.getElementById('loading-state').style.display = 'none';
-                    processAndRender();
-                    
-                    if (!wasEmpty) {
-                        const toast = document.getElementById('update-toast');
-                        toast.style.display = 'block';
-                        setTimeout(() => toast.style.display = 'none', 3000);
-                    }
+                    buildFilterButtons();
+                    updateDisplay();
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error('Sync failed'); }
         }
 
-        function processAndRender() {
-            updateFilterButtons();
-            
-            const params = new URLSearchParams(window.location.search);
-            const brandParam = params.get('brand');
-            const saleParam = params.get('sale');
-
-            if (saleParam) applyFilter(saleParam, 'sale', false);
-            else if (brandParam) applyFilter(brandParam, 'brand', false);
-            else applyFilter('all', 'brand', false);
-        }
-
-        function updateFilterButtons() {
+        function buildFilterButtons() {
             const saleContainer = document.getElementById('sale-filter');
             const brandContainer = document.getElementById('brand-filter');
-            
+
             saleContainer.innerHTML = '';
-            Array.from(brandContainer.children).forEach(child => { if (child.id !== 'btn-all') brandContainer.removeChild(child); });
-
-            const sales = [...new Set(rawProducts.map(p => p.saleLabel))].filter(Boolean);
-            const brands = [...new Set(rawProducts.map(p => p.brand))].filter(b => b !== '其他').sort();
-
-            sales.forEach(label => {
-                saleContainer.appendChild(createBtn(label, () => applyFilter(label, 'sale')));
+            const sales = [...new Set(allProducts.map(p => p.saleLabel))].filter(Boolean);
+            sales.forEach(l => {
+                const b = createBtn(l, () => applyFilter(l, 'sale'), 'sale', l);
+                saleContainer.appendChild(b);
             });
 
-            brands.forEach(brand => {
-                brandContainer.appendChild(createBtn(brand, () => applyFilter(brand, 'brand')));
-            });
-        }
-
-        function createBtn(text, onClick) {
-            const btn = document.createElement('button');
-            btn.className = 'filter-btn bg-white px-4 py-1.5 rounded-full border border-pink-50 text-xs text-gray-500 shadow-sm transition-all';
-            btn.innerText = text;
-            btn.onclick = onClick;
-            return btn;
-        }
-
-        function applyFilter(value, type, updateURL = true) {
-            currentFilter = { value, type };
+            const allBtn = document.getElementById('btn-all');
+            brandContainer.innerHTML = '';
+            brandContainer.appendChild(allBtn);
             
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('filter-btn-active');
-                b.classList.add('bg-white', 'text-gray-500');
+            const brands = [...new Set(allProducts.map(p => p.brand))].filter(b => b !== '其他').sort();
+            brands.forEach(b => {
+                const btn = createBtn(b, () => applyFilter(b, 'brand'), 'brand', b);
+                brandContainer.appendChild(btn);
             });
-
-            document.querySelectorAll('.filter-btn').forEach(b => { if(b.innerText === value) b.classList.add('filter-btn-active'); });
-            if (value === 'all') document.getElementById('btn-all').classList.add('filter-btn-active');
-
-            if (value === 'all') {
-                currentFilteredProducts = [...reversedProducts];
-            } else if (type === 'brand') {
-                currentFilteredProducts = reversedProducts.filter(p => p.brand === value);
-            } else {
-                currentFilteredProducts = rawProducts.filter(p => p.saleLabel === value);
-            }
             
-            executeSortAndRender();
-
-            if (updateURL) {
-                const newUrl = new URL(window.location);
-                newUrl.searchParams.delete('brand');
-                newUrl.searchParams.delete('sale');
-                if (value !== 'all') newUrl.searchParams.set(type, value);
-                window.history.pushState({}, '', newUrl);
-            }
+            updateFilterButtonsUI();
         }
 
-        function handleSortChange() { executeSortAndRender(); }
-
-        function executeSortAndRender() {
-            const sortOrder = document.getElementById('sort-order').value;
-            let displayList = [...currentFilteredProducts];
-
-            if (sortOrder === 'price-asc') displayList.sort((a, b) => a.finalPrice - b.finalPrice);
-            else if (sortOrder === 'price-desc') displayList.sort((a, b) => b.finalPrice - a.finalPrice);
-            else if (sortOrder === 'date-new') displayList.sort((a, b) => b.originalIndex - a.originalIndex);
-            else if (sortOrder === 'date-old') displayList.sort((a, b) => a.originalIndex - b.originalIndex);
-
-            renderProducts(displayList);
-        }
-
-        function renderProducts(products) {
+        function updateDisplay() {
             const container = document.getElementById('product-container');
-            container.innerHTML = products.length === 0 ? '<div class="col-span-full text-center py-20 text-gray-400 text-sm">此分類目前暫無商品。</div>' : '';
+            const sortOrder = document.getElementById('sort-order').value;
+            container.innerHTML = '';
             
-            products.forEach(p => {
-                const hasSpecial = p.specialPrice !== null;
+            let filtered = [];
+            if (activeFilter.type === 'all') {
+                filtered = [...allProducts];
+            } else if (activeFilter.type === 'brand') {
+                filtered = allProducts.filter(p => p.brand === activeFilter.value);
+            } else if (activeFilter.type === 'sale') {
+                filtered = allProducts.filter(p => p.saleLabel === activeFilter.value);
+            }
+
+            switch(sortOrder) {
+                case 'price-asc':
+                    filtered.sort((a, b) => (a.finalPrice || 0) - (b.finalPrice || 0));
+                    break;
+                case 'price-desc':
+                    filtered.sort((a, b) => (b.finalPrice || 0) - (a.finalPrice || 0));
+                    break;
+                case 'date-old':
+                    filtered.sort((a, b) => a.originalIndex - b.originalIndex);
+                    break;
+                case 'date-new':
+                case 'default':
+                default: 
+                    filtered.sort((a, b) => b.originalIndex - a.originalIndex);
+            }
+            
+            renderProducts(filtered);
+            updateFilterButtonsUI();
+        }
+
+        function updateFilterButtonsUI() {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                const bType = b.getAttribute('data-filter-type');
+                const bVal = b.getAttribute('data-filter-val');
+                if ((activeFilter.type === 'all' && bType === 'all') || (activeFilter.type === bType && activeFilter.value === bVal)) {
+                    b.classList.add('filter-btn-active');
+                } else {
+                    b.classList.remove('filter-btn-active');
+                }
+            });
+        }
+
+        function applyFilter(val, type) {
+            activeFilter = { type, value: val };
+            const url = new URL(window.location);
+            url.searchParams.delete('brand');
+            url.searchParams.delete('sale');
+            if (type !== 'all') url.searchParams.set(type, val);
+            window.history.pushState({}, '', url);
+            updateDisplay();
+        }
+
+        function handleSortChange() {
+            const sortVal = document.getElementById('sort-order').value;
+            const url = new URL(window.location);
+            url.searchParams.set('sort', sortVal);
+            window.history.pushState({}, '', url);
+            updateDisplay();
+        }
+
+        function renderProducts(items) {
+            const container = document.getElementById('product-container');
+            if (items.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400">目前沒有符合條件的商品。</div>';
+                return;
+            }
+            
+            const fragment = document.createDocumentFragment();
+            items.forEach(p => {
                 const targetUrl = p.postUrl || _FB_URL;
                 const card = document.createElement('div');
                 card.className = 'product-card';
@@ -320,60 +321,107 @@
                     ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
                     <div class="img-container">
                         <div class="img-slider">
-                            ${p.images.length > 0 ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="window.open('${targetUrl}', '_blank')">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img" onclick="window.open('${targetUrl}', '_blank')">`}
+                            ${p.images.length > 0 ? p.images.map(img => `<img data-src="${img}" class="lazy-img" onclick="window.open('${targetUrl}', '_blank')">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
                         </div>
                         <div class="absolute top-3 right-3"><span class="brand-badge">${p.brand}</span></div>
-                        ${p.postUrl ? `<div class="video-hint"><i class="fas fa-play-circle text-pink-400"></i><span>看影音</span></div>` : ''}
+                        ${p.postUrl ? `<div class="video-hint" onclick="window.open('${targetUrl}', '_blank')"><i class="fas fa-play-circle text-pink-400 text-sm pulse-icon"></i><span class="font-bold">查看社團最新影音/照片</span></div>` : ''}
                     </div>
-                    <div class="p-5 flex-grow flex flex-col justify-between">
+                    <div class="p-4 flex-grow flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-gray-800 text-lg leading-tight mb-1">
+                            <h3 class="font-bold text-gray-800 text-[14px] product-title mb-2">
                                 ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
                             </h3>
-                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded uppercase font-bold">SIZE: ${p.size || 'F'}</span>
+                            <span class="bg-gray-50 text-gray-400 text-[9px] px-1.5 py-0.5 rounded border border-gray-100 uppercase font-bold">SIZE: ${p.size}</span>
                         </div>
                         <div class="mt-4">
                             <div class="flex flex-col mb-3">
                                 <span class="text-gray-400 text-[10px] line-through">專櫃價 ${p.marketPrice || '---'}</span>
-                                ${hasSpecial ? `<span class="text-pink-500 text-xs line-through italic font-medium">特價 ${p.salePrice}</span>` : ''}
-                                <span class="text-pink-600 font-black text-2xl tracking-tight">${hasSpecial ? p.specialPrice : (p.salePrice || '電洽')}</span>
+                                ${p.specialPrice ? `<span class="text-pink-400 text-[10px] line-through italic">特價 ${p.salePrice}</span>` : ''}
+                                <span class="text-pink-600 font-black text-xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
                             </div>
-                            <button onclick="window.open('${targetUrl}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-full text-sm font-bold shadow-md active:scale-95 transition-transform shadow-pink-100">立即私訊購買</button>
+                            <button onclick="window.open('${targetUrl}', '_blank')" class="block w-full text-center bg-pink-500 text-white py-2.5 rounded-xl text-sm font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
                         </div>
                     </div>`;
-                container.appendChild(card);
+                fragment.appendChild(card);
             });
-            
+            container.appendChild(fragment);
+
             setTimeout(() => { 
-                document.querySelectorAll('.lazy-img').forEach(img => {
-                    const src = img.getAttribute('data-src');
-                    if (src) {
-                        img.src = src;
-                        img.onload = () => img.classList.add('img-loaded');
-                    }
+                document.querySelectorAll('.lazy-img').forEach(img => { 
+                    const src = img.getAttribute('data-src'); 
+                    if (src && !img.src) { 
+                        img.src = src; 
+                        img.onload = () => img.classList.add('img-loaded'); 
+                    } 
                 }); 
-            }, 100);
+            }, 50);
         }
 
-        function parseDiscount(val) {
-            if (!val) return null;
-            let numStr = val.toString().replace(/[^0-9.]/g, '');
-            let num = parseFloat(numStr);
-            if (!num) return null;
-            if (num > 0 && num < 1) num *= 10;
-            else if (num >= 10) num /= 10;
-            return num + "折";
+        function createBtn(label, fn, filterType, filterVal) {
+            const b = document.createElement('button');
+            b.className = 'filter-btn';
+            b.innerText = label; 
+            b.setAttribute('data-filter-type', filterType || '');
+            b.setAttribute('data-filter-val', filterVal || label);
+            b.onclick = fn; return b;
         }
+
+        function parseNum(val) { return parseInt(val?.toString().replace(/[^\d]/g, ''), 10) || 0; }
+        function formatPrice(val) { const n = parseNum(val); return n > 0 ? 'NT$ ' + n.toLocaleString() : null; }
         
-        function formatPrice(val) {
-            if (!val || val === '0' || val === '') return null;
-            const num = parseInt(val.toString().replace(/[^\d]/g, ''), 10);
-            return isNaN(num) ? null : 'NT$ ' + num.toLocaleString();
+        function parseDiscount(val, hasSpecialPrice) {
+            if (!val) return null;
+            // 取得純數字與小數點
+            let rawNum = parseFloat(val.toString().replace(/[^0-9.]/g, ''));
+            if (!rawNum || isNaN(rawNum)) return null;
+
+            let discountVal = rawNum;
+            
+            // 標準化數值：確保無論 0.7, 7, 70 都能轉為適合處理的單位
+            if (discountVal > 0 && discountVal < 1) {
+                // 0.7 -> 7
+                discountVal = discountVal * 10;
+            } else if (discountVal >= 100) {
+                // 如果是 750 (代表 75%) 或是誤植，除以 100 變回 7.5 類型
+                discountVal = discountVal / 100;
+            }
+            // 注意：若輸入是 70 或 75，此處先不動，後面根據範圍判斷
+
+            let displayStr = "";
+
+            // 規則 1: 處理 70.47% 或 0.70 這種「個位數折數」
+            // 如果數值在 70.0 ~ 79.99 之間，或是 7.0 ~ 7.99 之間
+            if ((discountVal >= 70 && discountVal < 80) || (discountVal >= 7 && discountVal < 8)) {
+                // 判定為 7折 類型
+                // 若是 70.47 則除以 10 變 7.047
+                let normalized = discountVal >= 10 ? discountVal / 10 : discountVal;
+                displayStr = Math.floor(normalized) + "折";
+            } 
+            // 規則 2: 處理 75% 或 74.5% 這種「雙位數折數」
+            else if (discountVal >= 10 && discountVal < 100) {
+                // 直接取整數，例如 74.5 -> 74折, 75 -> 75折
+                displayStr = Math.floor(discountVal) + "折";
+            }
+            // 規則 3: 其他 (如 0.75 -> 7.5 -> 75折)
+            else if (discountVal > 0 && discountVal < 10) {
+                displayStr = Math.floor(discountVal * 10) + "折";
+            }
+            else {
+                return null;
+            }
+            
+            // 安全機制：過濾掉 0折 或 100折 等異常
+            if (displayStr === "0折") return null;
+
+            // 套用文字規則：僅在有特賣金額時顯示「特價再下殺」
+            if (hasSpecialPrice) {
+                return "特價再下殺 " + displayStr;
+            } else {
+                return displayStr;
+            }
         }
 
-        init();
+        window.onload = init;
     </script>
 </body>
 </html>
-
-```
