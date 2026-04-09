@@ -7,6 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <!-- Favicon & Mobile Icons -->
+    <link rel="icon" type="image/png" href="https://img.icons8.com/fluency/48/handbag.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/144/handbag.png">
+    <meta name="apple-mobile-web-app-title" content="艾菲精品">
+
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-WNN5GCVZ54"></script>
     <script>
@@ -309,7 +314,7 @@
             } else {
                 container.classList.add('grid-cols-1');
                 container.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
-                singleBtn.classList.add('active');
+                singleBtn.classList.remove('active');
                 gridBtn.classList.remove('active');
             }
             updateDisplay(false);
