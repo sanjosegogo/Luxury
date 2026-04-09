@@ -24,7 +24,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聖荷西好物購🇺🇸 - 全球精品代購</title>
+    <title>聖荷西好物購-艾菲精品🇺🇸 - 美國精品代購</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -143,7 +143,7 @@
         </div>
     </div>
 
-    <!-- 修正: 跑馬燈置頂常駐於 header 內 -->
+    <!-- 跑馬燈置頂常駐於 header 內 -->
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-pink-100">
         <!-- 置頂跑馬燈容器 -->
         <div id="marquee-container" class="bg-pink-500 text-white py-2 overflow-hidden hidden shadow-sm border-b border-pink-600/20">
@@ -154,7 +154,7 @@
             <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
                 <span class="text-3xl">🦋</span>
                 <div class="flex flex-col">
-                    <h1 class="text-xl font-bold text-gray-800 leading-none">聖荷西好物購🇺🇸</h1>
+                    <h1 class="text-xl font-bold text-gray-800 leading-none">聖荷西好物購-艾菲精品🇺🇸</h1>
                     <span class="text-[10px] text-pink-400 font-medium tracking-widest uppercase">San Jose Goodies</span>
                 </div>
             </div>
@@ -210,8 +210,8 @@
 
     <footer class="max-w-screen-md mx-auto px-4 py-14 text-center text-gray-400 text-sm">
         <div class="border-t border-pink-100 pt-14">
-            <p class="font-bold text-gray-600 text-base mb-1">聖荷西好物購🇺🇸</p>
-            <p class="mb-5 text-gray-500">精品代購・嚴選品質・100% 正品保障</p>
+            <p class="font-bold text-gray-600 text-base mb-1">聖荷西好物購-艾菲精品🇺🇸</p>
+            <p class="mb-5 text-gray-500">美國精品代購・嚴選品質・100% 正品保障</p>
             
             <div class="info-grid shadow-sm">
                 <div class="info-item">
@@ -333,7 +333,7 @@
             if (brandParam) activeFilter = { type: 'brand', value: brandParam };
             else if (saleParam) activeFilter = { type: 'sale', value: saleParam };
 
-            // 修正：跑馬燈新增到期日邏輯 (D欄)
+            // 跑馬燈新增到期日邏輯 (D欄)
             fetch(`${_0xAPI}?action=marquee`).then(res => res.json()).then(rows => {
                 const container = document.getElementById('marquee-text');
                 const marqueeWrapper = document.getElementById('marquee-container');
