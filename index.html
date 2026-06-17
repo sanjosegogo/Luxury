@@ -116,6 +116,11 @@
         .compact-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
         .compact-filter-bar::-webkit-scrollbar { display: none; }
         .compact-filter-select { flex: 1 0 118px; min-width: 118px; height: 38px; border-radius: 12px; border: 1px solid var(--theme-soft, #EFE2DE); background-color: white; color: #4b5563; padding: 0 10px; font-size: 0.85rem; font-weight: 700; outline: none; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .empty-result-card { background: white; border: 1px solid var(--theme-soft, #EFE2DE); border-radius: 18px; padding: 28px 20px; box-shadow: 0 12px 32px rgba(44,44,44,0.08); text-align: center; }
+        .empty-result-card h3 { color: var(--theme-text, #2C2C2C); font-size: 1.12rem; font-weight: 900; margin: 10px 0 6px; }
+        .empty-result-card p { color: var(--theme-muted, #7A6B68); font-size: 0.92rem; line-height: 1.65; margin: 0 auto 18px; max-width: 28rem; }
+        .empty-result-icon { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--theme-accent-soft, #F7EEEE); color: var(--theme-accent, #C39B9B); font-size: 1.35rem; }
+        .empty-result-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; background: var(--theme-accent, #C39B9B); color: white; font-weight: 900; box-shadow: 0 12px 24px var(--theme-glow, rgba(195,155,155,0.18)); }
         
         .page-btn { background: white; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--theme-soft, #EFE2DE); font-size: 0.95rem; color: #6b7280; transition: all 0.15s; font-weight: 500; }
         .page-btn-active { background-color: var(--theme-accent) !important; color: white !important; border-color: var(--theme-gold, #D4AF37) !important; }
@@ -584,7 +589,7 @@
         function renderProducts(items) {
             const container = document.getElementById('product-container');
             if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full text-center py-20 text-gray-400 text-lg">目前沒有符合條件的商品。</div>';
+                container.innerHTML = renderEmptyResult();
                 return;
             }
             const fragment = document.createDocumentFragment();
@@ -647,6 +652,25 @@
             });
             container.appendChild(fragment);
             container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
+        }
+
+        function renderEmptyResult() {
+            const activeLabels = [];
+            if (activeSale !== 'all') activeLabels.push(activeSale);
+            if (activeCategory !== 'all') activeLabels.push(activeCategory);
+            if (activeBrand !== 'all') activeLabels.push(activeBrand);
+            const filters = activeLabels.length ? `「${activeLabels.map(escapeHtml).join('、')}」` : '目前條件';
+            const suggestion = activeLabels.length ? `你可能正在找 ${filters}，這組條件暫時沒有商品。` : '目前暫時沒有符合條件的商品。';
+            return `
+                <div class="col-span-full empty-result-card">
+                    <div class="empty-result-icon"><i class="fas fa-search"></i></div>
+                    <h3>這裡暫時沒有商品</h3>
+                    <p>${suggestion}<br>可以先看全部分類，或改選其他活動、分類、品牌。</p>
+                    <button type="button" class="empty-result-action" onclick="resetAllFilters()">
+                        <i class="fas fa-border-all"></i>
+                        看全部商品
+                    </button>
+                </div>`;
         }
 
         function handleSliderScroll(el) {
@@ -828,6 +852,22 @@
             const sortVal = document.getElementById('sort-order').value;
             const url = new URL(window.location);
             url.searchParams.set('sort', sortVal);
+            window.history.pushState({}, '', url);
+            updateDisplay(true);
+        }
+
+        function resetAllFilters() {
+            activeSale = 'all';
+            activeCategory = 'all';
+            activeBrand = 'all';
+            const categorySelect = document.getElementById('category-filter-select');
+            const brandSelect = document.getElementById('brand-filter-select');
+            if (categorySelect) categorySelect.value = 'all';
+            if (brandSelect) brandSelect.value = 'all';
+            const url = new URL(window.location);
+            url.searchParams.delete('sale');
+            url.searchParams.delete('category');
+            url.searchParams.delete('brand');
             window.history.pushState({}, '', url);
             updateDisplay(true);
         }
