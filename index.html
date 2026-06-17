@@ -47,7 +47,6 @@
         .grid-layout-2 .product-card .price-main { font-size: 1.125rem; }
         .grid-layout-2 .product-card .buy-btn { padding: 0.5rem; font-size: 0.875rem; border-radius: 0.75rem; }
         .grid-layout-2 .product-card .share-btn { padding: 0.5rem; font-size: 0.82rem; border-radius: 0.75rem; }
-        .grid-layout-2 .product-card .video-hint { padding: 4px 8px; font-size: 0.65rem; bottom: 8px; left: 8px; }
         .grid-layout-2 .product-card .sale-tag { font-size: 0.7rem; padding: 4px 10px; }
         .grid-layout-2 .product-card .brand-badge { font-size: 0.7rem; padding: 2px 8px; }
         .grid-layout-2 .product-card .market-price-highlight { font-size: 0.8rem; padding: 6px 8px; }
@@ -121,6 +120,10 @@
         .empty-result-card p { color: var(--theme-muted, #7A6B68); font-size: 0.92rem; line-height: 1.65; margin: 0 auto 18px; max-width: 28rem; }
         .empty-result-icon { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--theme-accent-soft, #F7EEEE); color: var(--theme-accent, #C39B9B); font-size: 1.35rem; }
         .empty-result-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; background: var(--theme-accent, #C39B9B); color: white; font-weight: 900; box-shadow: 0 12px 24px var(--theme-glow, rgba(195,155,155,0.18)); }
+        .product-social-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .product-social-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 0 12px; border: 1px solid var(--theme-soft, #EFE2DE); background: #fff; font-size: 0.78rem; font-weight: 900; box-shadow: 0 6px 14px rgba(44,44,44,0.05); }
+        .product-social-link.ig { color: #C13584; }
+        .product-social-link.fb { color: #1877F2; }
         
         .page-btn { background: white; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--theme-soft, #EFE2DE); font-size: 0.95rem; color: #6b7280; transition: all 0.15s; font-weight: 500; }
         .page-btn-active { background-color: var(--theme-accent) !important; color: white !important; border-color: var(--theme-gold, #D4AF37) !important; }
@@ -136,10 +139,6 @@
         .layout-toggle-btn { width: 34px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; cursor: pointer; color: #d1d5db; }
         .layout-toggle-btn.active { background: var(--theme-accent); color: white; }
         
-        .video-hint { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); color: white; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; position: absolute; bottom: 12px; left: 12px; z-index: 20; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .pulse-icon { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--theme-accent, #C39B9B); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -177,6 +176,22 @@
             .info-item:last-child { border-radius: 0 1rem 1rem 0; border-right: 1px solid var(--theme-soft, #EFE2DE); }
         }
         
+        .footer-social { margin-top: 3rem; padding: 1.25rem; border: 1px solid var(--theme-soft, #EFE2DE); border-radius: 1.25rem; background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(253,249,246,0.92)); box-shadow: 0 14px 36px rgba(44,44,44,0.08); text-align: left; }
+        .footer-social-kicker { color: var(--theme-accent-dark, #9F7878); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+        .footer-social-title { margin-top: 0.25rem; color: var(--theme-text, #2C2C2C); font-size: 1.25rem; font-weight: 900; line-height: 1.25; }
+        .footer-social-copy { margin-top: 0.35rem; color: var(--theme-muted, #7A6B68); font-size: 0.92rem; line-height: 1.65; }
+        .footer-social-grid { display: grid; gap: 0.75rem; margin-top: 1rem; }
+        .footer-social-card { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 0.75rem; min-height: 74px; padding: 0.875rem; border-radius: 1rem; color: inherit; text-decoration: none; background: rgba(255,255,255,0.74); box-shadow: 0 10px 22px rgba(44,44,44,0.05); }
+        .footer-social-word { display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 900; letter-spacing: 0.04em; }
+        .footer-social-word.line { color: #06A84F; }
+        .footer-social-word.ig { color: #C13584; }
+        .footer-social-word.fb { color: #1877F2; }
+        .footer-social-card span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--theme-muted, #7A6B68); font-size: 0.84rem; font-weight: 800; }
+        .footer-social-card em { color: var(--theme-accent, #C39B9B); font-style: normal; font-weight: 900; }
+        @media (min-width: 640px) {
+            .footer-social-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .footer-social-card { grid-template-columns: 1fr; justify-items: center; align-content: center; text-align: center; min-height: 132px; padding: 1rem 0.75rem; }
+        }
         .loading-message { color: color-mix(in srgb, var(--theme-accent, #C39B9B), var(--theme-text, #2C2C2C) 18%); }
     </style>
 </head>
@@ -308,6 +323,31 @@
                     </div>
                 </div>
             </div>
+
+            <section class="footer-social">
+                <div>
+                    <p class="footer-social-kicker">FOLLOW US</p>
+                    <h2 class="footer-social-title">追蹤艾菲精品最新活動</h2>
+                    <p class="footer-social-copy">接收新品到貨、限時優惠與實拍更新，選擇你最常使用的平台追蹤我們。</p>
+                </div>
+                <div class="footer-social-grid">
+                    <a class="footer-social-card" href="https://line.me/R/ti/p/@615ipuve" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'line' })">
+                        <span class="footer-social-word line">LINE</span>
+                        <span>第一時間接收活動資訊</span>
+                        <em>加入</em>
+                    </a>
+                    <a class="footer-social-card" href="https://www.instagram.com/eiffels_boutique_/" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'instagram' })">
+                        <span class="footer-social-word ig">IG</span>
+                        <span>新品實拍、穿搭細節</span>
+                        <em>追蹤</em>
+                    </a>
+                    <a class="footer-social-card" href="https://www.facebook.com/groups/183038802197503/" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'facebook' })">
+                        <span class="footer-social-word fb">FB</span>
+                        <span>商品討論、社群互動</span>
+                        <em>加入</em>
+                    </a>
+                </div>
+            </section>
 
             <div class="mt-12 px-6 text-[11px] text-gray-400 opacity-80 leading-relaxed space-y-3 text-left sm:text-center">
                 <p>※ 本網頁所載產品圖示及影音僅供導覽參考，實際到貨細節將依原廠 or 採購專櫃實物為準。</p>
@@ -500,6 +540,8 @@
                         specialPrice: formatPrice(row[8]), finalPrice: finalPriceNum, size: row[9] || 'F',
                         brand: row[10] || '其他', postUrl: row[11],
                         category: row[19] || '鞋包配飾',
+                        instagramUrl: row[20] || '',
+                        facebookUrl: row[21] || '',
                         images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http'))
                     };
                 });
@@ -599,7 +641,7 @@
                 card.id = `product-${p.id}`;
                 card.dataset.productId = p.id;
                 const hasMultipleImages = p.images.length > 1;
-                const showVideoHint = p.postUrl && p.postUrl.toString().trim() !== "";
+                const socialLinks = renderProductSocialLinks(p);
                 
                 const productData = JSON.stringify({
                     name: p.name,
@@ -623,11 +665,6 @@
                             </div>
                         ` : ''}
                         <div class="absolute top-4 right-4"><span class="brand-badge">${p.brand}</span></div>
-                        ${showVideoHint ? `
-                        <div class="video-hint" onclick="safeOpenLink('${_FB_URL}', 'video_hint_click', { name: '${p.name.replace(/'/g, "\\'")}' })">
-                            <i class="fas fa-play-circle text-pink-400 text-base pulse-icon"></i>
-                            <span class="font-bold">加LINE帳號看實拍影音/貼文</span>
-                        </div>` : ''}
                     </div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
@@ -646,12 +683,24 @@
                                 <button onclick="safeOpenLink('${_FB_URL}', 'purchase_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}', price: ${p.finalPrice} })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
                                 <button onclick="shareProduct('${p.id}', event)" class="share-btn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold active:scale-95 transition-all" aria-label="分享商品 ${p.id}"><i class="fas fa-link"></i><span class="hidden sm:inline">分享</span></button>
                             </div>
+                            ${socialLinks}
                         </div>
                     </div>`;
                 fragment.appendChild(card);
             });
             container.appendChild(fragment);
             container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
+        }
+
+        function renderProductSocialLinks(product) {
+            const links = [];
+            if (product.instagramUrl && product.instagramUrl.toString().startsWith('http')) {
+                links.push(`<button type="button" class="product-social-link ig" onclick="safeOpenLink('${escapeJs(product.instagramUrl)}', 'product_social_click', { platform: 'instagram', product_id: '${escapeJs(product.id)}' })">IG 實拍</button>`);
+            }
+            if (product.facebookUrl && product.facebookUrl.toString().startsWith('http')) {
+                links.push(`<button type="button" class="product-social-link fb" onclick="safeOpenLink('${escapeJs(product.facebookUrl)}', 'product_social_click', { platform: 'facebook', product_id: '${escapeJs(product.id)}' })">FB 貼文</button>`);
+            }
+            return links.length ? `<div class="product-social-links">${links.join('')}</div>` : '';
         }
 
         function renderEmptyResult() {
@@ -968,6 +1017,10 @@
 
         function escapeAttr(value) {
             return escapeHtml(value);
+        }
+
+        function escapeJs(value) {
+            return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
         }
 
         function parseNum(val) { return parseInt(val?.toString().replace(/[^\d]/g, ''), 10) || 0; }
