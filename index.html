@@ -120,10 +120,8 @@
         .empty-result-card p { color: var(--theme-muted, #7A6B68); font-size: 0.92rem; line-height: 1.65; margin: 0 auto 18px; max-width: 28rem; }
         .empty-result-icon { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--theme-accent-soft, #F7EEEE); color: var(--theme-accent, #C39B9B); font-size: 1.35rem; }
         .empty-result-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; background: var(--theme-accent, #C39B9B); color: white; font-weight: 900; box-shadow: 0 12px 24px var(--theme-glow, rgba(195,155,155,0.18)); }
-        .product-social-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .product-social-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 0 12px; border: 1px solid var(--theme-soft, #EFE2DE); background: #fff; font-size: 0.78rem; font-weight: 900; box-shadow: 0 6px 14px rgba(44,44,44,0.05); }
-        .product-social-link.ig { color: #C13584; }
-        .product-social-link.fb { color: #1877F2; }
+        .product-social-links { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 22; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: auto; }
+        .product-social-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--theme-accent), white 45%); background: linear-gradient(90deg, color-mix(in srgb, var(--theme-accent), white 86%), #fffaf7); color: color-mix(in srgb, var(--theme-text), var(--theme-accent) 35%); font-size: 0.78rem; font-weight: 900; box-shadow: 0 5px 14px var(--theme-glow); }
         
         .page-btn { background: white; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--theme-soft, #EFE2DE); font-size: 0.95rem; color: #6b7280; transition: all 0.15s; font-weight: 500; }
         .page-btn-active { background-color: var(--theme-accent) !important; color: white !important; border-color: var(--theme-gold, #D4AF37) !important; }
@@ -665,6 +663,7 @@
                             </div>
                         ` : ''}
                         <div class="absolute top-4 right-4"><span class="brand-badge">${p.brand}</span></div>
+                        ${socialLinks}
                     </div>
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
@@ -683,7 +682,6 @@
                                 <button onclick="safeOpenLink('${_FB_URL}', 'purchase_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}', price: ${p.finalPrice} })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
                                 <button onclick="shareProduct('${p.id}', event)" class="share-btn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold active:scale-95 transition-all" aria-label="分享商品 ${p.id}"><i class="fas fa-link"></i><span class="hidden sm:inline">分享</span></button>
                             </div>
-                            ${socialLinks}
                         </div>
                     </div>`;
                 fragment.appendChild(card);
