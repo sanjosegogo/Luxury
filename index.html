@@ -66,10 +66,13 @@
 
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: var(--theme-accent, #C39B9B); backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, var(--theme-accent, #C39B9B), var(--theme-gold, #D4AF37)); color: white; padding: 6px 14px; border-radius: 0 0 15px 0; font-size: 0.85rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
-        .discount-badge { display: inline-block; vertical-align: middle; background: color-mix(in srgb, var(--theme-gold, #D4AF37), white 82%); color: #8a6b16; font-size: 12px; padding: 3px 8px; border-radius: 4px; font-weight: 800; margin-right: 6px; margin-bottom: 4px; border: 1px solid color-mix(in srgb, var(--theme-gold, #D4AF37), white 48%); line-height: 1; }
         .market-price-highlight { position: relative; display: inline-flex; align-items: center; width: fit-content; max-width: 100%; margin-bottom: 5px; padding: 7px 10px; border: 1px solid color-mix(in srgb, var(--theme-accent), white 45%); border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--theme-accent), white 86%), #fffaf7); color: color-mix(in srgb, var(--theme-text), var(--theme-accent) 35%); font-size: 0.95rem; font-weight: 900; line-height: 1.1; box-shadow: 0 5px 14px var(--theme-glow); overflow: hidden; }
         .market-price-highlight::after { content: ""; position: absolute; left: 8px; right: 8px; top: 50%; height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--theme-accent), var(--theme-text) 16%); transform: rotate(-7deg); }
-        .market-price-highlight::before { content: "原價"; margin-right: 6px; padding: 2px 6px; border-radius: 999px; background: var(--theme-gold, #D4AF37); color: white; font-size: 0.65rem; letter-spacing: 0.04em; }
+        .market-price-highlight::before { content: "專櫃價"; margin-right: 6px; padding: 2px 6px; border-radius: 999px; background: var(--theme-gold, #D4AF37); color: white; font-size: 0.65rem; letter-spacing: 0.04em; }
+        .savings-line { display: inline-flex; width: fit-content; max-width: 100%; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 7px; padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--theme-gold, #D4AF37), white 84%); color: #8a6b16; font-size: 0.78rem; font-weight: 900; line-height: 1.25; }
+        .product-feature { margin-top: 8px; color: color-mix(in srgb, var(--theme-text, #2C2C2C), var(--theme-accent, #C39B9B) 24%); background: var(--theme-accent-soft, #F7EEEE); border-radius: 10px; padding: 8px 10px; font-size: 0.82rem; font-weight: 800; line-height: 1.55; }
+        .grid-layout-2 .product-feature { display: none; }
+        .grid-layout-2 .savings-line { font-size: 0.68rem; padding: 5px 8px; border-radius: 10px; }
         .share-btn { background: #fff; color: var(--theme-accent, #C39B9B); border: 1px solid var(--theme-soft, #EFE2DE); }
         .product-card.shared-highlight { outline: 3px solid var(--theme-accent, #C39B9B); box-shadow: 0 0 0 8px var(--theme-glow, rgba(195,155,155,0.18)), 0 18px 40px rgba(0,0,0,0.12); animation: productFocusPulse 1.1s ease-in-out 2; }
         @keyframes productFocusPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.018); } }
@@ -100,6 +103,9 @@
         .shadow-pink-100 { box-shadow: 0 8px 18px var(--theme-glow) !important; }
         .bg-pink-50, .bg-pink-100 { background-color: var(--theme-accent-soft) !important; }
         .filter-btn { border-color: var(--theme-soft); }
+        .site-brand { min-width: 0; flex: 1; }
+        .site-title { font-size: clamp(1.05rem, 4.5vw, 1.35rem); }
+        .site-tagline { color: var(--theme-muted, #7A6B68); font-size: clamp(0.68rem, 2.8vw, 0.82rem); font-weight: 500; line-height: 1.35; margin-top: 4px; max-width: 24rem; }
         
         @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .marquee-content { display: inline-block; white-space: nowrap; animation: marquee 30s linear infinite; will-change: transform; }
@@ -227,15 +233,15 @@
             <div class="marquee-content text-sm sm:text-base font-bold" id="marquee-text"></div>
         </div>
         
-        <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
+        <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-start gap-3">
+            <div class="site-brand flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
                 <!-- 已移除蝴蝶圖示與國旗以防止手機折行 -->
                 <div class="flex flex-col">
-                    <h1 class="text-xl font-bold text-gray-800 leading-none">聖荷西好物購-艾菲精品</h1>
-                    <span class="text-[10px] text-pink-400 font-medium tracking-widest uppercase mt-1">SAN JOSE GOODIES</span>
+                    <h1 class="site-title font-bold text-gray-800 leading-tight">聖荷西好物購-艾菲精品</h1>
+                    <span class="site-tagline">🇺🇸美國加州聖荷西選品｜精品包鞋｜生活好物</span>
                 </div>
             </div>
-            <button onclick="handleFBJoinClick()" class="bg-pink-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-pink-100 whitespace-nowrap">加入官方LINE</button>
+            <button onclick="handleFBJoinClick()" class="bg-pink-500 text-white px-4 sm:px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-pink-100 whitespace-nowrap flex-shrink-0">加入官方LINE</button>
         </div>
     </header>
 
@@ -357,9 +363,10 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://line.me/R/ti/p/@615ipuve';
-        const CACHE_KEY = 'sanjose_v31_safe_link';
+        const CACHE_KEY = 'sanjose_v32_sale_order_feature';
 
         let allProducts = [];
+        let saleCatalog = [];
         let activeSale = 'all';
         let activeBrand = 'all';
         let activeCategory = 'all';
@@ -435,6 +442,7 @@
             pendingProductId = params.get('product');
             if (brandParam) activeBrand = brandParam;
             if (saleParam) activeSale = saleParam;
+            else activeSale = '';
             if (categoryParam) activeCategory = categoryParam;
 
             // 跑馬燈新增到期日邏輯 (D欄)
@@ -482,7 +490,9 @@
             const cached = localStorage.getItem(CACHE_KEY);
             if (cached) {
                 try {
-                    allProducts = JSON.parse(cached);
+                    const cachedData = JSON.parse(cached);
+                    allProducts = Array.isArray(cachedData) ? cachedData : (cachedData.products || []);
+                    saleCatalog = Array.isArray(cachedData.saleCatalog) ? cachedData.saleCatalog : [];
                     document.getElementById('loading-state').style.display = 'none';
                     buildFilterButtons();
                     updateDisplay();
@@ -524,29 +534,36 @@
         async function syncData() {
             try {
                 const response = await fetch(`${_0xAPI}?action=get_data`);
-                const rows = await response.json();
+                const result = await response.json();
+                const rows = Array.isArray(result) ? result : (result.items || []);
+                const nextSaleCatalog = Array.isArray(result?.saleLabels) ? result.saleLabels : [];
                 if (!Array.isArray(rows) || rows.length < 2) return;
                 const validRows = rows.slice(1).filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]);
                 const newData = validRows.map((row, index) => {
                     const priceI = parseNum(row[8]);
                     const finalPriceNum = priceI > 0 ? priceI : parseNum(row[7]);
                     const displayDiscount = priceI > 0 ? row[4] : row[3];
+                    const marketPriceNum = parseNum(row[6]);
+                    const salePriceNum = parseNum(row[7]);
                     return {
                         id: row[0], originalIndex: index, saleLabel: row[2]?.toString().trim() || null,
                         discount: displayDiscount ? parseDiscount(displayDiscount, priceI > 0) : null,
                         name: row[5].toString(), marketPrice: formatPrice(row[6]), salePrice: formatPrice(row[7]),
+                        marketPriceNum, salePriceNum,
                         specialPrice: formatPrice(row[8]), finalPrice: finalPriceNum, size: row[9] || 'F',
                         brand: row[10] || '其他', postUrl: row[11],
                         category: row[19] || '鞋包配飾',
                         instagramUrl: row[20] || '',
                         facebookUrl: row[21] || '',
+                        productFeature: row[22] || '',
                         images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http'))
                     };
                 });
-                const newJson = JSON.stringify(newData);
+                const newJson = JSON.stringify({ products: newData, saleCatalog: nextSaleCatalog });
                 if (newJson !== localStorage.getItem(CACHE_KEY)) {
                     localStorage.setItem(CACHE_KEY, newJson);
                     allProducts = newData;
+                    saleCatalog = nextSaleCatalog;
                     document.getElementById('loading-state').style.display = 'none';
                     buildFilterButtons();
                     updateDisplay();
@@ -568,9 +585,19 @@
                     }
                 }
             });
-            const sortedSales = [...saleMap.entries()].sort((a, b) => b[1] - a[1]).map(entry => entry[0]);
-            saleContainer.appendChild(createBtn('全部', () => applyFilter('all', 'sale'), 'sale', 'all'));
+            const catalogSales = saleCatalog
+                .filter(item => item && item.active !== false && saleMap.has(item.name))
+                .sort((a, b) => (Number(a.sort) || 9999) - (Number(b.sort) || 9999) || a.name.localeCompare(b.name, 'zh-Hant'))
+                .map(item => item.name);
+            const fallbackSales = [...saleMap.entries()]
+                .filter(([label]) => !catalogSales.includes(label))
+                .sort((a, b) => b[1] - a[1])
+                .map(entry => entry[0]);
+            const sortedSales = [...catalogSales, ...fallbackSales];
+            if (!activeSale) activeSale = sortedSales[0] || 'all';
+            if (activeSale !== 'all' && !sortedSales.includes(activeSale)) activeSale = sortedSales[0] || 'all';
             sortedSales.forEach(l => saleContainer.appendChild(createBtn(l, () => applyFilter(l, 'sale'), 'sale', l)));
+            saleContainer.appendChild(createBtn('全部', () => applyFilter('all', 'sale'), 'sale', 'all'));
             const categories = [...new Set(allProducts.map(p => p.category || '鞋包配飾'))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
             const brands = [...new Set(allProducts.map(p => p.brand))].filter(b => b !== '其他').sort();
             categorySelect.innerHTML = '<option value="all">全部分類</option>' + categories.map(c => `<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join('');
@@ -640,11 +667,11 @@
                 card.dataset.productId = p.id;
                 const hasMultipleImages = p.images.length > 1;
                 const socialLinks = renderProductSocialLinks(p);
+                const savingsLine = renderSavingsLine(p);
                 
                 const productData = JSON.stringify({
                     name: p.name,
                     price: p.specialPrice || p.salePrice || '電洽',
-                    discount: p.discount,
                     id: p.id,
                     images: p.images
                 }).replace(/"/g, '&quot;');
@@ -668,14 +695,14 @@
                     <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
                             <h3 class="font-bold text-gray-800 leading-relaxed">
-                                ${p.discount ? `<span class="discount-badge">${p.discount}</span>` : ''}${p.name}
+                                ${p.name}
                             </h3>
-                            <span class="bg-gray-50 text-gray-400 text-[10px] px-2 py-0.5 rounded border border-gray-100 uppercase font-bold">尺寸: ${p.size}</span>
+                            ${p.productFeature ? `<p class="product-feature">✨ ${escapeHtml(p.productFeature)}</p>` : ''}
                         </div>
                         <div class="mt-3">
                             <div class="flex flex-col mb-3">
-                                <span class="market-price-highlight">專櫃價 ${p.marketPrice || '---'}</span>
-                                ${p.specialPrice ? `<span class="text-pink-400 text-[10px] line-through italic">特價 ${p.salePrice}</span>` : ''}
+                                <span class="market-price-highlight">${p.marketPrice || '---'}</span>
+                                ${savingsLine}
                                 <span class="price-main text-pink-600 font-black text-2xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
                             </div>
                             <div class="grid grid-cols-[1fr_auto] gap-2">
@@ -699,6 +726,15 @@
                 links.push(`<button type="button" class="product-social-link fb" onclick="safeOpenLink('${escapeJs(product.facebookUrl)}', 'product_social_click', { platform: 'facebook', product_id: '${escapeJs(product.id)}' })">FB 貼文</button>`);
             }
             return links.length ? `<div class="product-social-links">${links.join('')}</div>` : '';
+        }
+
+        function renderSavingsLine(product) {
+            const market = Number(product.marketPriceNum) || parseNum(product.marketPrice);
+            const final = Number(product.finalPrice) || 0;
+            if (!market || !final || market <= final) return '';
+            const saved = market - final;
+            const percent = Math.round((saved / market) * 100);
+            return `<span class="savings-line">🔥現省$${saved.toLocaleString('zh-TW')}｜便宜${percent}%</span>`;
         }
 
         function renderEmptyResult() {
@@ -762,7 +798,7 @@
             slider.style.scrollBehavior = 'auto'; 
             slider.innerHTML = p.images.map(src => `<img src="${src}" alt="preview">`).join('');
             
-            nameEl.innerHTML = (p.discount ? `<span class="discount-badge">${p.discount}</span>` : '') + p.name;
+            nameEl.innerText = p.name;
             priceEl.innerText = p.price;
             buyBtn.dataset.productId = p.id || '';
             buyBtn.dataset.productName = p.name || '';
