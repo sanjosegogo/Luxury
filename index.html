@@ -363,7 +363,7 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbx64j6HKGdHQVaYDw_7XN7YXK6kl5kUgBTCiEJ2tkKdevuu2bZ0S-WNDOdGk8Ytluum/exec";
         const _FB_URL = 'https://line.me/R/ti/p/@615ipuve';
-        const CACHE_KEY = 'sanjose_v34_sale_order_feature_badge';
+        const CACHE_KEY = 'sanjose_v35_sale_order_live_refresh';
 
         let allProducts = [];
         let saleCatalog = [];
@@ -424,6 +424,7 @@
         }
 
         async function init() {
+            clearLegacyCache();
             fetchTheme();
             if (window.innerWidth >= 640) {
                 layoutMode = 'grid';
@@ -473,7 +474,7 @@
                     activeItems.forEach(item => {
                         const span = document.createElement('span');
                         span.className = 'marquee-item';
-                        const textContent = `✨ ${item[1]} ✨`;
+                        const textContent = `🏷️ ${item[1]} ✨`;
                         if (item[2] && item[2].toString().startsWith('http')) {
                             const linkSpan = document.createElement('span');
                             linkSpan.className = 'marquee-link';
@@ -561,16 +562,13 @@
                         images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http'))
                     };
                 });
-                const newJson = JSON.stringify({ products: newData, saleCatalog: nextSaleCatalog });
-                if (newJson !== localStorage.getItem(CACHE_KEY)) {
-                    localStorage.setItem(CACHE_KEY, newJson);
-                    allProducts = newData;
-                    saleCatalog = nextSaleCatalog;
-                    document.getElementById('loading-state').style.display = 'none';
-                    buildFilterButtons();
-                    updateDisplay();
-                    focusPendingProduct();
-                }
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ products: newData, saleCatalog: nextSaleCatalog }));
+                allProducts = newData;
+                saleCatalog = nextSaleCatalog;
+                document.getElementById('loading-state').style.display = 'none';
+                buildFilterButtons();
+                updateDisplay();
+                focusPendingProduct();
             } catch (e) { console.error('Sync failed'); }
         }
 
@@ -1069,6 +1067,12 @@
 
         function normalizeSaleLabel(value) {
             return String(value ?? '').replace(/^[\s📣🔥✨🎉⭐️📢📌💥🛍️🏷️]+/gu, '').trim();
+        }
+
+        function clearLegacyCache() {
+            Object.keys(localStorage)
+                .filter(key => key.startsWith('sanjose_') && key !== CACHE_KEY)
+                .forEach(key => localStorage.removeItem(key));
         }
 
         function parseNum(val) { return parseInt(val?.toString().replace(/[^\d]/g, ''), 10) || 0; }
