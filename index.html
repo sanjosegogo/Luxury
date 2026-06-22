@@ -72,6 +72,8 @@
         .savings-line { display: inline-flex; width: fit-content; max-width: 100%; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 7px; padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--theme-gold, #D4AF37), white 84%); color: #8a6b16; font-size: 0.78rem; font-weight: 900; line-height: 1.25; }
         .product-feature-badge { display: inline; margin-right: 6px; padding: 3px 8px; border-radius: 999px; color: color-mix(in srgb, var(--theme-text, #2C2C2C), var(--theme-accent, #C39B9B) 30%); background: var(--theme-accent-soft, #F7EEEE); font-size: 0.75rem; font-weight: 900; line-height: 1.85; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
         .grid-layout-2 .product-feature-badge { margin-right: 4px; padding: 2px 6px; font-size: 0.65rem; line-height: 1.75; }
+        .product-size-badge { display: inline-flex; width: fit-content; align-items: center; margin-top: 8px; padding: 4px 9px; border-radius: 8px; border: 1px solid var(--theme-soft, #EFE2DE); background: rgba(255,255,255,0.86); color: var(--theme-muted, #7A6B68); font-size: 0.78rem; font-weight: 800; line-height: 1.25; }
+        .grid-layout-2 .product-size-badge { margin-top: 5px; padding: 3px 7px; font-size: 0.68rem; border-radius: 7px; }
         .grid-layout-2 .savings-line { font-size: 0.68rem; padding: 5px 8px; border-radius: 10px; }
         .share-btn { background: #fff; color: var(--theme-accent, #C39B9B); border: 1px solid var(--theme-soft, #EFE2DE); }
         .product-card.shared-highlight { outline: 3px solid var(--theme-accent, #C39B9B); box-shadow: 0 0 0 8px var(--theme-glow, rgba(195,155,155,0.18)), 0 18px 40px rgba(0,0,0,0.12); animation: productFocusPulse 1.1s ease-in-out 2; }
@@ -706,6 +708,7 @@
                             <h3 class="font-bold text-gray-800 leading-relaxed">
                                 ${p.productFeature ? `<span class="product-feature-badge">${escapeHtml(p.productFeature)}</span>` : ''}${p.name}
                             </h3>
+                            ${p.size ? `<span class="product-size-badge">尺寸：${escapeHtml(p.size)}</span>` : ''}
                         </div>
                         <div class="mt-3">
                             <div class="flex flex-col mb-3">
