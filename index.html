@@ -236,7 +236,7 @@
         </div>
         
         <div class="max-w-screen-md mx-auto px-4 py-4 flex justify-between items-start gap-3">
-            <div class="site-brand flex items-center gap-2 cursor-pointer" onclick="window.location.href=window.location.pathname">
+            <div class="site-brand flex items-center gap-2 cursor-pointer" onclick="handleHomeClick()">
                 <!-- 已移除蝴蝶圖示與國旗以防止手機折行 -->
                 <div class="flex flex-col">
                     <h1 class="site-title font-bold text-gray-800 leading-tight">聖荷西好物購-艾菲精品</h1>
@@ -311,7 +311,7 @@
                     <p class="text-gray-600 font-bold mb-1 text-left text-base">11:30-18:30</p>
                     <p class="text-[10px] text-gray-400 mb-4 text-left">其餘時段歡迎預約</p>
                     <div class="mt-auto text-left">
-                        <a href="tel:0227181989" class="text-gray-600 font-bold flex items-center gap-2 hover:text-pink-500 text-base">
+                        <a href="tel:0227181989" onclick="trackGAEvent('phone_click', { event_name_zh: '點擊電話', event_category_zh: '門市聯絡', interaction_location_zh: '頁尾營業資訊', button_text_zh: '02-27181989', destination_platform_zh: '電話' })" class="text-gray-600 font-bold flex items-center gap-2 hover:text-pink-500 text-base">
                             <i class="fas fa-phone-alt text-pink-300"></i> 02-27181989
                         </a>
                     </div>
@@ -403,6 +403,16 @@
             });
         }
 
+        function handleHomeClick() {
+            trackGAEvent('home_click', {
+                event_name_zh: '點擊品牌回首頁',
+                event_category_zh: '頁面導覽',
+                interaction_location_zh: '頁首品牌區',
+                button_text_zh: '聖荷西好物購-艾菲精品'
+            });
+            window.location.href = window.location.pathname;
+        }
+
         function safeOpenLink(url, eventName, params) {
             if (eventName) trackGAEvent(eventName, params);
             if (!url) return;
@@ -414,6 +424,14 @@
 
         function toggleLayout(mode) {
             layoutMode = mode;
+            trackGAEvent('layout_change', {
+                layout_mode: mode,
+                event_name_zh: '切換商品版型',
+                event_category_zh: '瀏覽偏好',
+                interaction_location_zh: '上方版型切換',
+                button_text_zh: mode === 'grid' ? '雙欄' : '單欄',
+                selected_option_zh: mode === 'grid' ? '雙欄' : '單欄'
+            });
             const container = document.getElementById('product-container');
             const singleBtn = document.getElementById('layout-single');
             const gridBtn = document.getElementById('layout-grid');
@@ -697,6 +715,7 @@
                     name: p.name,
                     price: p.specialPrice || p.salePrice || '電洽',
                     id: p.id,
+                    brand: p.brand,
                     images: p.images
                 }).replace(/"/g, '&quot;');
                 const safeProductId = escapeJs(p.id);
@@ -808,10 +827,22 @@
             let next = current + dir;
             if (next < 0) next = dots.length - 1;
             if (next >= dots.length) next = 0;
+            const product = getProductFromElement(btn);
+            trackGAEvent('product_image_change', {
+                product_id: product?.id || '',
+                product_name: product?.name || '',
+                brand: product?.brand || '',
+                image_index: next + 1,
+                event_name_zh: dir > 0 ? '點擊商品圖片下一張' : '點擊商品圖片上一張',
+                event_category_zh: '商品圖片瀏覽',
+                interaction_location_zh: '商品卡片圖片區',
+                button_text_zh: dir > 0 ? '下一張' : '上一張',
+                selected_option_zh: `第 ${next + 1} 張`
+            });
             slider.scrollTo({ left: next * slider.clientWidth, behavior: 'smooth' });
         }
 
-        function openLightbox(p, startIdx) {
+        function openLightbox(p, startIdx, source = 'product_image') {
             const lightbox = document.getElementById('lightbox');
             const slider = document.getElementById('lightbox-slider');
             const counter = document.getElementById('lightbox-counter');
@@ -832,7 +863,20 @@
             buyBtn.dataset.productId = p.id || '';
             buyBtn.dataset.productName = p.name || '';
             buyBtn.dataset.productPrice = p.price || '';
+            buyBtn.dataset.productBrand = p.brand || '';
             shareBtn.dataset.productId = p.id || '';
+
+            trackGAEvent('product_image_open', {
+                product_id: p.id || '',
+                product_name: p.name || '',
+                brand: p.brand || '',
+                image_index: startIdx + 1,
+                event_name_zh: '開啟商品圖片燈箱',
+                event_category_zh: '商品圖片瀏覽',
+                interaction_location_zh: source === 'shared_link_auto' ? '分享連結自動開啟' : '商品圖片',
+                button_text_zh: '商品圖片',
+                selected_option_zh: `第 ${startIdx + 1} 張`
+            });
 
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -869,8 +913,20 @@
         function closeLightbox(e) {
             if (e.target.id === 'lightbox' || e.target.classList.contains('fa-times') || e.target.closest('.lightbox-close')) {
                 const lightbox = document.getElementById('lightbox');
+                if (!lightbox.classList.contains('active')) return;
+                const product = getLightboxProductData();
+                trackGAEvent('lightbox_close', {
+                    product_id: product.product_id,
+                    product_name: product.product_name,
+                    brand: product.brand,
+                    event_name_zh: '關閉商品圖片燈箱',
+                    event_category_zh: '商品圖片瀏覽',
+                    interaction_location_zh: '商品燈箱',
+                    button_text_zh: '關閉'
+                });
                 lightbox.classList.remove('active');
                 document.body.style.overflow = 'auto';
+                if (e.target.closest('.lightbox-close')) e.stopPropagation();
             }
         }
 
@@ -883,18 +939,52 @@
             let next = current + dir;
 
             if (next < 0) {
+                trackLightboxImageChange(imgs.length - 1, dir);
                 slider.style.scrollBehavior = 'auto';
                 slider.scrollLeft = (imgs.length - 1) * slider.clientWidth;
                 setTimeout(() => slider.style.scrollBehavior = 'smooth', 10);
                 return;
             }
             if (next >= imgs.length) {
+                trackLightboxImageChange(0, dir);
                 slider.style.scrollBehavior = 'auto';
                 slider.scrollLeft = 0;
                 setTimeout(() => slider.style.scrollBehavior = 'smooth', 10);
                 return;
             }
+            trackLightboxImageChange(next, dir);
             slider.scrollTo({ left: next * slider.clientWidth, behavior: 'smooth' });
+        }
+
+        function getProductFromElement(el) {
+            const card = el?.closest?.('.product-card');
+            const productId = card?.dataset?.productId;
+            return allProducts.find(item => String(item.id) === String(productId)) || null;
+        }
+
+        function getLightboxProductData() {
+            const button = document.getElementById('lightbox-buy-button');
+            return {
+                product_id: button?.dataset?.productId || '',
+                product_name: button?.dataset?.productName || '',
+                brand: button?.dataset?.productBrand || '',
+                price: button?.dataset?.productPrice || ''
+            };
+        }
+
+        function trackLightboxImageChange(targetIndex, dir) {
+            const product = getLightboxProductData();
+            trackGAEvent('lightbox_image_change', {
+                product_id: product.product_id,
+                product_name: product.product_name,
+                brand: product.brand,
+                image_index: targetIndex + 1,
+                event_name_zh: dir > 0 ? '點擊燈箱下一張' : '點擊燈箱上一張',
+                event_category_zh: '商品圖片瀏覽',
+                interaction_location_zh: '商品燈箱',
+                button_text_zh: dir > 0 ? '下一張' : '上一張',
+                selected_option_zh: `第 ${targetIndex + 1} 張`
+            });
         }
 
         function renderPagination(totalPages) {
@@ -905,20 +995,33 @@
             const prevBtn = document.createElement('button');
             prevBtn.className = `page-btn ${currentPage === 1 ? 'page-btn-disabled' : ''}`;
             prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-            prevBtn.onclick = () => { if(currentPage > 1) { currentPage--; updateDisplay(false); } };
+            prevBtn.onclick = () => { if(currentPage > 1) handlePaginationClick(currentPage - 1, '上一頁'); };
             container.appendChild(prevBtn);
             for (let i = 1; i <= totalPages; i++) {
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `page-btn ${currentPage === i ? 'page-btn-active' : ''}`;
                 pageBtn.innerText = i;
-                pageBtn.onclick = () => { if(currentPage !== i) { currentPage = i; updateDisplay(false); } };
+                pageBtn.onclick = () => { if(currentPage !== i) handlePaginationClick(i, `第 ${i} 頁`); };
                 container.appendChild(pageBtn);
             }
             const nextBtn = document.createElement('button');
             nextBtn.className = `page-btn ${currentPage === totalPages ? 'page-btn-disabled' : ''}`;
             nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-            nextBtn.onclick = () => { if(currentPage < totalPages) { currentPage++; updateDisplay(false); } };
+            nextBtn.onclick = () => { if(currentPage < totalPages) handlePaginationClick(currentPage + 1, '下一頁'); };
             container.appendChild(nextBtn);
+        }
+
+        function handlePaginationClick(targetPage, buttonText) {
+            currentPage = targetPage;
+            trackGAEvent('pagination_click', {
+                page_number: targetPage,
+                event_name_zh: '切換商品分頁',
+                event_category_zh: '商品瀏覽',
+                interaction_location_zh: '商品列表分頁',
+                button_text_zh: buttonText,
+                selected_option_zh: `第 ${targetPage} 頁`
+            });
+            updateDisplay(false);
         }
 
         function updateFilterButtonsUI() {
@@ -935,6 +1038,18 @@
 
         function applyFilter(val, type) {
             if (type === 'sale') activeSale = val;
+            if (type === 'sale') {
+                trackGAEvent('filter_change', {
+                    filter_type: 'sale',
+                    filter_value: val,
+                    event_name_zh: '切換限時活動分類',
+                    event_category_zh: '商品篩選',
+                    interaction_location_zh: '限時活動分類按鈕',
+                    filter_type_zh: '限時活動分類',
+                    button_text_zh: val === 'all' ? '全部' : val,
+                    selected_option_zh: val === 'all' ? '全部' : val
+                });
+            }
             const url = new URL(window.location);
             url.searchParams.delete('sale');
             if (activeSale !== 'all') url.searchParams.set('sale', activeSale);
@@ -943,7 +1058,19 @@
         }
 
         function handleCategoryChange() {
-            activeCategory = document.getElementById('category-filter-select').value || 'all';
+            const select = document.getElementById('category-filter-select');
+            activeCategory = select.value || 'all';
+            const selectedText = getSelectedOptionText(select);
+            trackGAEvent('filter_change', {
+                filter_type: 'category',
+                filter_value: activeCategory,
+                event_name_zh: '切換商品分類',
+                event_category_zh: '商品篩選',
+                interaction_location_zh: '上方下拉選單',
+                filter_type_zh: '商品分類',
+                button_text_zh: selectedText,
+                selected_option_zh: selectedText
+            });
             const url = new URL(window.location);
             url.searchParams.delete('category');
             if (activeCategory !== 'all') url.searchParams.set('category', activeCategory);
@@ -952,7 +1079,19 @@
         }
 
         function handleBrandChange() {
-            activeBrand = document.getElementById('brand-filter-select').value || 'all';
+            const select = document.getElementById('brand-filter-select');
+            activeBrand = select.value || 'all';
+            const selectedText = getSelectedOptionText(select);
+            trackGAEvent('filter_change', {
+                filter_type: 'brand',
+                filter_value: activeBrand,
+                event_name_zh: '切換品牌分類',
+                event_category_zh: '商品篩選',
+                interaction_location_zh: '上方下拉選單',
+                filter_type_zh: '品牌分類',
+                button_text_zh: selectedText,
+                selected_option_zh: selectedText
+            });
             const url = new URL(window.location);
             url.searchParams.delete('brand');
             if (activeBrand !== 'all') url.searchParams.set('brand', activeBrand);
@@ -961,7 +1100,18 @@
         }
 
         function handleSortChange() {
-            const sortVal = document.getElementById('sort-order').value;
+            const select = document.getElementById('sort-order');
+            const sortVal = select.value;
+            const selectedText = getSelectedOptionText(select);
+            trackGAEvent('sort_change', {
+                sort_value: sortVal,
+                event_name_zh: '切換排序',
+                event_category_zh: '商品排序',
+                interaction_location_zh: '上方下拉選單',
+                filter_type_zh: '排序',
+                button_text_zh: selectedText,
+                selected_option_zh: selectedText
+            });
             const url = new URL(window.location);
             url.searchParams.set('sort', sortVal);
             window.history.pushState({}, '', url);
@@ -969,6 +1119,16 @@
         }
 
         function resetAllFilters() {
+            trackGAEvent('reset_filter', {
+                previous_sale: activeSale,
+                previous_category: activeCategory,
+                previous_brand: activeBrand,
+                event_name_zh: '重設篩選',
+                event_category_zh: '商品篩選',
+                interaction_location_zh: '空結果提示',
+                button_text_zh: '看全部商品',
+                selected_option_zh: '全部商品'
+            });
             activeSale = 'all';
             activeCategory = 'all';
             activeBrand = 'all';
@@ -984,7 +1144,7 @@
             updateDisplay(true);
         }
 
-        async function shareProduct(productId, event) {
+        async function shareProduct(productId, event, source = 'product_card') {
             if (event) event.stopPropagation();
             const product = allProducts.find(item => String(item.id) === String(productId));
             if (!product) return;
@@ -1000,7 +1160,7 @@
                 product_name: product.name,
                 event_name_zh: '分享商品',
                 event_category_zh: '商品分享',
-                interaction_location_zh: '商品卡片或燈箱',
+                interaction_location_zh: source === 'lightbox' ? '商品燈箱' : '商品卡片',
                 button_text_zh: '分享'
             });
             try {
@@ -1029,6 +1189,7 @@
                 location: 'lightbox',
                 product_id: button.dataset.productId || '',
                 product_name: button.dataset.productName || '',
+                brand: button.dataset.productBrand || '',
                 price: button.dataset.productPrice || '',
                 event_name_zh: '點擊立即私訊購買',
                 event_category_zh: '購買意圖',
@@ -1041,7 +1202,7 @@
         function handleLightboxShare(event) {
             if (event) event.stopPropagation();
             const productId = document.getElementById('lightbox-share-button').dataset.productId;
-            if (productId) shareProduct(productId, event);
+            if (productId) shareProduct(productId, event, 'lightbox');
         }
 
         function focusPendingProduct() {
@@ -1059,10 +1220,11 @@
                         openLightbox({
                             id: product.id,
                             name: product.name,
-                            price: product.specialPrice || product.salePrice || '電洽',
-                            discount: product.discount,
-                            images: product.images
-                        }, 0);
+	                            price: product.specialPrice || product.salePrice || '電洽',
+	                            discount: product.discount,
+	                            brand: product.brand,
+	                            images: product.images
+	                        }, 0, 'shared_link_auto');
                     }, 420);
                 }
             }, 120);
@@ -1096,6 +1258,10 @@
 
         function escapeJs(value) {
             return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
+        }
+
+        function getSelectedOptionText(select) {
+            return select?.options?.[select.selectedIndex]?.text?.trim() || '';
         }
 
         function normalizeSaleLabel(value) {
