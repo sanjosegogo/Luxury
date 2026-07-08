@@ -68,7 +68,7 @@
         .sale-tag { background: linear-gradient(45deg, var(--theme-accent, #C39B9B), var(--theme-gold, #D4AF37)); color: white; padding: 6px 14px; border-radius: 0 0 15px 0; font-size: 0.85rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
         .market-price-highlight { position: relative; display: inline-flex; align-items: center; width: fit-content; max-width: 100%; margin-bottom: 5px; padding: 7px 10px; border: 1px solid color-mix(in srgb, var(--theme-accent), white 45%); border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--theme-accent), white 86%), #fffaf7); color: color-mix(in srgb, var(--theme-text), var(--theme-accent) 35%); font-size: 0.95rem; font-weight: 900; line-height: 1.1; box-shadow: 0 5px 14px var(--theme-glow); overflow: hidden; }
         .market-price-highlight::after { content: ""; position: absolute; left: 8px; right: 8px; top: 50%; height: 3px; border-radius: 999px; background: color-mix(in srgb, var(--theme-accent), var(--theme-text) 16%); transform: rotate(-7deg); }
-        .market-price-highlight::before { content: "專櫃價"; margin-right: 6px; padding: 2px 6px; border-radius: 999px; background: var(--theme-gold, #D4AF37); color: white; font-size: 0.65rem; letter-spacing: 0.04em; }
+        .market-price-highlight::before { content: "市價"; margin-right: 6px; padding: 2px 6px; border-radius: 999px; background: var(--theme-gold, #D4AF37); color: white; font-size: 0.65rem; letter-spacing: 0.04em; }
         .savings-line { display: inline-flex; width: fit-content; max-width: 100%; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 7px; padding: 6px 10px; border-radius: 999px; background: color-mix(in srgb, var(--theme-gold, #D4AF37), white 84%); color: #8a6b16; font-size: 0.78rem; font-weight: 900; line-height: 1.25; }
         .product-feature-badge { display: inline; margin-right: 6px; padding: 3px 8px; border-radius: 999px; color: color-mix(in srgb, var(--theme-text, #2C2C2C), var(--theme-accent, #C39B9B) 30%); background: var(--theme-accent-soft, #F7EEEE); font-size: 0.75rem; font-weight: 900; line-height: 1.85; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
         .grid-layout-2 .product-feature-badge { margin-right: 4px; padding: 2px 6px; font-size: 0.65rem; line-height: 1.75; }
@@ -243,7 +243,7 @@
                     <span class="site-tagline">🇺🇸美國加州聖荷西選品｜精品包鞋｜生活好物</span>
                 </div>
             </div>
-            <button onclick="handleFBJoinClick()" class="bg-pink-500 text-white px-4 sm:px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-pink-100 whitespace-nowrap flex-shrink-0">加入官方LINE</button>
+            <button onclick="handleOfficialLineClick()" class="bg-pink-500 text-white px-4 sm:px-5 py-2 rounded-full text-sm font-bold shadow-md shadow-pink-100 whitespace-nowrap flex-shrink-0">加入官方 LINE</button>
         </div>
     </header>
 
@@ -299,7 +299,7 @@
                     <p class="text-gray-600 font-medium mb-1 text-left text-base">台北市中山區長春路380號</p>
                     <p class="text-[10px] text-gray-400 mb-4 text-left">南京復興站 (捷運文湖/松山新店線)</p>
                     <div class="mt-auto text-left">
-                        <button onclick="safeOpenLink('https://www.google.com/maps/search/?api=1&query=台北市中山區長春路380號', 'map_navigation_click', {})" class="inline-flex items-center gap-2 text-pink-500 font-bold hover:underline text-base">
+                        <button onclick="safeOpenLink('https://www.google.com/maps/search/?api=1&query=台北市中山區長春路380號', 'map_navigation_click', { event_name_zh: '開啟地圖導航', event_category_zh: '門市導航', interaction_location_zh: '頁尾門市資訊', button_text_zh: '開啟地圖導航', destination_platform_zh: 'Google 地圖', store_address_zh: '台北市中山區長春路380號' })" class="inline-flex items-center gap-2 text-pink-500 font-bold hover:underline text-base">
                             <i class="fas fa-directions"></i> 開啟地圖導航
                         </button>
                     </div>
@@ -337,17 +337,17 @@
                     <p class="footer-social-copy">接收新品到貨、限時優惠與實拍更新，選擇你最常使用的平台追蹤我們。</p>
                 </div>
                 <div class="footer-social-grid">
-                    <a class="footer-social-card" href="https://line.me/R/ti/p/@615ipuve" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'line' })">
+                    <a class="footer-social-card" href="https://line.me/R/ti/p/@615ipuve" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'line', event_name_zh: '點擊頁尾 LINE', event_category_zh: '社群導流', interaction_location_zh: '頁尾社群區', button_text_zh: '加入', destination_platform_zh: 'LINE' })">
                         <span class="footer-social-word line">LINE</span>
                         <span>第一時間接收活動資訊</span>
                         <em>加入</em>
                     </a>
-                    <a class="footer-social-card" href="https://www.instagram.com/eiffels_boutique_/" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'instagram' })">
+                    <a class="footer-social-card" href="https://www.instagram.com/eiffels_boutique_/" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'instagram', event_name_zh: '點擊頁尾 IG', event_category_zh: '社群導流', interaction_location_zh: '頁尾社群區', button_text_zh: '追蹤', destination_platform_zh: 'Instagram' })">
                         <span class="footer-social-word ig">IG</span>
                         <span>新品實拍、穿搭細節</span>
                         <em>追蹤</em>
                     </a>
-                    <a class="footer-social-card" href="https://www.facebook.com/groups/183038802197503/" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'facebook' })">
+                    <a class="footer-social-card" href="https://www.facebook.com/groups/183038802197503/" target="_blank" rel="noopener" onclick="trackGAEvent('social_footer_click', { platform: 'facebook', event_name_zh: '點擊頁尾 FB', event_category_zh: '社群導流', interaction_location_zh: '頁尾社群區', button_text_zh: '加入', destination_platform_zh: 'Facebook' })">
                         <span class="footer-social-word fb">FB</span>
                         <span>商品討論、社群互動</span>
                         <em>加入</em>
@@ -364,7 +364,7 @@
 
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbwaSKimOWvuUWTVNOojwwBryLr5yLLX5TIWzpPFTolKmCHQlgl1hNqGvpgu4C6QC4ei/exec";
-        const _FB_URL = 'https://line.me/R/ti/p/@615ipuve';
+        const _LINE_URL = 'https://line.me/R/ti/p/@615ipuve';
         const CACHE_KEY = 'sanjose_v35_sale_order_live_refresh';
 
         let allProducts = [];
@@ -392,8 +392,15 @@
             });
         }, { rootMargin: '100px' });
 
-        function handleFBJoinClick() {
-            safeOpenLink(_FB_URL, 'join_line_official', { location: 'header' });
+        function handleOfficialLineClick() {
+            safeOpenLink(_LINE_URL, 'join_official_line', {
+                location: 'header',
+                event_name_zh: '加入官方 LINE',
+                event_category_zh: '官方 LINE 導流',
+                interaction_location_zh: '頁首',
+                button_text_zh: '加入官方 LINE',
+                destination_platform_zh: 'LINE'
+            });
         }
 
         function safeOpenLink(url, eventName, params) {
@@ -481,7 +488,13 @@
                             const linkSpan = document.createElement('span');
                             linkSpan.className = 'marquee-link';
                             linkSpan.innerText = textContent;
-                            linkSpan.onclick = () => safeOpenLink(item[2], 'marquee_click', { text: item[1] });
+                            linkSpan.onclick = () => safeOpenLink(item[2], 'marquee_click', {
+                                text: item[1],
+                                event_name_zh: '點擊跑馬燈',
+                                event_category_zh: '跑馬燈導流',
+                                interaction_location_zh: '置頂跑馬燈',
+                                link_text_zh: item[1]
+                            });
                             span.appendChild(linkSpan);
                         } else {
                             span.innerText = textContent;
@@ -686,6 +699,9 @@
                     id: p.id,
                     images: p.images
                 }).replace(/"/g, '&quot;');
+                const safeProductId = escapeJs(p.id);
+                const safeProductName = escapeJs(p.name);
+                const safeBrand = escapeJs(p.brand);
 
                 card.innerHTML = `
                     ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
@@ -717,7 +733,7 @@
                                 <span class="price-main text-pink-600 font-black text-2xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
                             </div>
                             <div class="grid grid-cols-[1fr_auto] gap-2">
-                                <button onclick="safeOpenLink('${_FB_URL}', 'purchase_click', { product_name: '${p.name.replace(/'/g, "\\'")}', brand: '${p.brand}', price: ${p.finalPrice} })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
+                                <button onclick="safeOpenLink('${_LINE_URL}', 'purchase_click', { location: 'product_card', product_id: '${safeProductId}', product_name: '${safeProductName}', brand: '${safeBrand}', price: ${p.finalPrice}, event_name_zh: '點擊立即私訊購買', event_category_zh: '購買意圖', interaction_location_zh: '商品卡片', button_text_zh: '立即私訊購買', destination_platform_zh: 'LINE' })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
                                 <button onclick="shareProduct('${p.id}', event)" class="share-btn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold active:scale-95 transition-all" aria-label="分享商品 ${p.id}"><i class="fas fa-link"></i><span class="hidden sm:inline">分享</span></button>
                             </div>
                         </div>
@@ -730,11 +746,13 @@
 
         function renderProductSocialLinks(product) {
             const links = [];
+            const productId = escapeJs(product.id);
+            const productName = escapeJs(product.name);
             if (product.instagramUrl && product.instagramUrl.toString().startsWith('http')) {
-                links.push(`<button type="button" class="product-social-link ig" onclick="safeOpenLink('${escapeJs(product.instagramUrl)}', 'product_social_click', { platform: 'instagram', product_id: '${escapeJs(product.id)}' })">IG 實拍</button>`);
+                links.push(`<button type="button" class="product-social-link ig" onclick="safeOpenLink('${escapeJs(product.instagramUrl)}', 'product_social_click', { platform: 'instagram', product_id: '${productId}', product_name: '${productName}', event_name_zh: '點擊商品 IG 實拍', event_category_zh: '商品社群導流', interaction_location_zh: '商品圖片區', button_text_zh: 'IG 實拍', destination_platform_zh: 'Instagram' })">IG 實拍</button>`);
             }
             if (product.facebookUrl && product.facebookUrl.toString().startsWith('http')) {
-                links.push(`<button type="button" class="product-social-link fb" onclick="safeOpenLink('${escapeJs(product.facebookUrl)}', 'product_social_click', { platform: 'facebook', product_id: '${escapeJs(product.id)}' })">FB 貼文</button>`);
+                links.push(`<button type="button" class="product-social-link fb" onclick="safeOpenLink('${escapeJs(product.facebookUrl)}', 'product_social_click', { platform: 'facebook', product_id: '${productId}', product_name: '${productName}', event_name_zh: '點擊商品 FB 貼文', event_category_zh: '商品社群導流', interaction_location_zh: '商品圖片區', button_text_zh: 'FB 貼文', destination_platform_zh: 'Facebook' })">FB 貼文</button>`);
             }
             return links.length ? `<div class="product-social-links">${links.join('')}</div>` : '';
         }
@@ -977,7 +995,14 @@
                 text: `${product.name}｜${product.specialPrice || product.salePrice || '歡迎詢問'}`,
                 url: url.toString(),
             };
-            trackGAEvent('share_product', { product_id: product.id, product_name: product.name });
+            trackGAEvent('share_product', {
+                product_id: product.id,
+                product_name: product.name,
+                event_name_zh: '分享商品',
+                event_category_zh: '商品分享',
+                interaction_location_zh: '商品卡片或燈箱',
+                button_text_zh: '分享'
+            });
             try {
                 const canUseNativeShare = window.location.protocol === 'https:' && navigator.share && (!navigator.canShare || navigator.canShare(shareData));
                 if (canUseNativeShare) {
@@ -1000,11 +1025,16 @@
         function handleLightboxPurchase(event) {
             if (event) event.stopPropagation();
             const button = document.getElementById('lightbox-buy-button');
-            safeOpenLink(_FB_URL, 'purchase_click', {
+            safeOpenLink(_LINE_URL, 'purchase_click', {
                 location: 'lightbox',
                 product_id: button.dataset.productId || '',
                 product_name: button.dataset.productName || '',
-                price: button.dataset.productPrice || ''
+                price: button.dataset.productPrice || '',
+                event_name_zh: '點擊立即私訊購買',
+                event_category_zh: '購買意圖',
+                interaction_location_zh: '商品燈箱',
+                button_text_zh: '立即私訊購買',
+                destination_platform_zh: 'LINE'
             });
         }
 
