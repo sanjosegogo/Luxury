@@ -384,10 +384,11 @@
     <script>
         const _0xAPI = "https://script.google.com/macros/s/AKfycbwaSKimOWvuUWTVNOojwwBryLr5yLLX5TIWzpPFTolKmCHQlgl1hNqGvpgu4C6QC4ei/exec";
         const _LINE_URL = 'https://line.me/R/ti/p/@615ipuve';
-        const CACHE_KEY = 'sanjose_v35_sale_order_live_refresh';
+        const CACHE_KEY = 'sanjose_v36_category_catalog';
 
         let allProducts = [];
         let saleCatalog = [];
+        let categoryCatalog = null;
         let activeSale = 'all';
         let activeBrand = 'all';
         let activeCategory = 'all';
@@ -548,6 +549,7 @@
                     const cachedData = JSON.parse(cached);
                     allProducts = Array.isArray(cachedData) ? cachedData : (cachedData.products || []);
                     saleCatalog = Array.isArray(cachedData.saleCatalog) ? cachedData.saleCatalog : [];
+                    categoryCatalog = Array.isArray(cachedData.categoryCatalog) ? cachedData.categoryCatalog : null;
                     document.getElementById('loading-state').style.display = 'none';
                     buildFilterButtons();
                     updateDisplay();
@@ -592,6 +594,7 @@
                 const result = await response.json();
                 const rows = Array.isArray(result) ? result : (result.items || []);
                 const nextSaleCatalog = Array.isArray(result?.saleLabels) ? result.saleLabels : [];
+                const nextCategoryCatalog = Array.isArray(result?.categories) ? result.categories : null;
                 if (!Array.isArray(rows) || rows.length < 2) return;
                 const validRows = rows.slice(1).filter(row => (row[1] === true || row[1] === 'TRUE') && row[5]);
                 const newData = validRows.map((row, index) => {
@@ -607,16 +610,17 @@
                         marketPriceNum, salePriceNum,
                         specialPrice: formatPrice(row[8]), finalPrice: finalPriceNum, size: row[9] || 'F',
                         brand: row[10] || '其他', postUrl: row[11],
-                        category: row[19] || '鞋包配飾',
+                        category: row[19]?.toString().trim() || '',
                         instagramUrl: row[20] || '',
                         facebookUrl: row[21] || '',
                         productFeature: row[22] || '',
                         images: row.slice(12, 17).filter(url => url && url.toString().startsWith('http'))
                     };
                 });
-                localStorage.setItem(CACHE_KEY, JSON.stringify({ products: newData, saleCatalog: nextSaleCatalog }));
+                localStorage.setItem(CACHE_KEY, JSON.stringify({ products: newData, saleCatalog: nextSaleCatalog, categoryCatalog: nextCategoryCatalog }));
                 allProducts = newData;
                 saleCatalog = nextSaleCatalog;
+                categoryCatalog = nextCategoryCatalog;
                 document.getElementById('loading-state').style.display = 'none';
                 buildFilterButtons();
                 updateDisplay();
@@ -655,7 +659,13 @@
             if (activeSale !== 'all' && !sortedSaleKeys.includes(normalizeSaleLabel(activeSale))) activeSale = sortedSales[0] || 'all';
             sortedSales.forEach(l => saleContainer.appendChild(createBtn(l, () => applyFilter(l, 'sale'), 'sale', l)));
             saleContainer.appendChild(createBtn('全部', () => applyFilter('all', 'sale'), 'sale', 'all'));
-            const categories = [...new Set(allProducts.map(p => p.category || '鞋包配飾'))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+            const catalogCategories = Array.isArray(categoryCatalog)
+                ? categoryCatalog
+                    .filter(item => item && item.active !== false && item.name)
+                    .sort((a, b) => (Number(a.sort) || 9999) - (Number(b.sort) || 9999) || String(a.name || '').localeCompare(String(b.name || ''), 'zh-Hant'))
+                    .map(item => item.name)
+                : null;
+            const categories = catalogCategories || [...new Set(allProducts.map(p => p.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'zh-Hant'));
             const brands = [...new Set(allProducts.map(p => p.brand))].filter(b => b !== '其他').sort();
             categorySelect.innerHTML = '<option value="all">全部分類</option>' + categories.map(c => `<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join('');
             brandSelect.innerHTML = '<option value="all">全部品牌</option>' + brands.map(b => `<option value="${escapeAttr(b)}">${escapeHtml(b)}</option>`).join('');
@@ -676,7 +686,7 @@
             const sortOrder = document.getElementById('sort-order').value;
             let filtered = allProducts.filter(p => {
                 const saleOk = activeSale === 'all' || normalizeSaleLabel(p.saleLabel) === normalizeSaleLabel(activeSale);
-                const categoryOk = activeCategory === 'all' || (p.category || '鞋包配飾') === activeCategory;
+                const categoryOk = activeCategory === 'all' || p.category === activeCategory;
                 const brandOk = activeBrand === 'all' || p.brand === activeBrand;
                 return saleOk && categoryOk && brandOk;
             });
