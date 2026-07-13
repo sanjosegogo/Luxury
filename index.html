@@ -40,10 +40,11 @@
         /* 基礎產品卡片樣式 */
         .product-card { border-radius: 1.25rem; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background: white; display: flex; flex-direction: column; position: relative; height: 100%; transition: transform 0.2s; contain: content; }
         .product-card:active { transform: scale(0.98); }
+        .product-title-text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         
         /* 雙欄模式樣式調整 */
         .grid-layout-2 .product-card .p-5 { padding: 0.75rem; }
-        .grid-layout-2 .product-card h3 { font-size: 0.875rem; line-height: 1.4; height: 2.8rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 0.5rem; }
+        .grid-layout-2 .product-card h3 { font-size: 0.875rem; line-height: 1.4; min-height: 3.85rem; margin-bottom: 0.5rem; }
         .grid-layout-2 .product-card .price-main { font-size: 1.125rem; }
         .grid-layout-2 .product-card .buy-btn { padding: 0.5rem; font-size: 0.875rem; border-radius: 0.75rem; }
         .grid-layout-2 .product-card .share-btn { padding: 0.5rem; font-size: 0.82rem; border-radius: 0.75rem; }
@@ -128,6 +129,24 @@
         .empty-result-card p { color: var(--theme-muted, #7A6B68); font-size: 0.92rem; line-height: 1.65; margin: 0 auto 18px; max-width: 28rem; }
         .empty-result-icon { width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--theme-accent-soft, #F7EEEE); color: var(--theme-accent, #C39B9B); font-size: 1.35rem; }
         .empty-result-action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; background: var(--theme-accent, #C39B9B); color: white; font-weight: 900; box-shadow: 0 12px 24px var(--theme-glow, rgba(195,155,155,0.18)); }
+        .empty-recommendation-section { margin-top: 1.25rem; }
+        .empty-recommendation-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .empty-recommendation-kicker { color: var(--theme-accent-dark, #9F7878); font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+        .empty-recommendation-title { color: var(--theme-text, #2C2C2C); font-size: 1.18rem; font-weight: 900; line-height: 1.25; }
+        .empty-recommendation-action-wrap { display: flex; justify-content: center; margin-top: 1rem; }
+        .empty-recommendation-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .empty-recommendation-grid .product-title-text { -webkit-line-clamp: 2; }
+        @media (min-width: 640px) {
+            .empty-recommendation-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+            .empty-recommendation-grid .product-card .p-5 { padding: 0.75rem; }
+            .empty-recommendation-grid .product-card h3 { font-size: 0.875rem; line-height: 1.4; min-height: 2.8rem; margin-bottom: 0.5rem; }
+            .empty-recommendation-grid .product-card .price-main { font-size: 1.125rem; }
+            .empty-recommendation-grid .product-card .buy-btn { padding: 0.5rem; font-size: 0.875rem; border-radius: 0.75rem; }
+            .empty-recommendation-grid .product-card .share-btn { padding: 0.5rem; font-size: 0.82rem; border-radius: 0.75rem; }
+            .empty-recommendation-grid .product-card .sale-tag { font-size: 0.7rem; padding: 4px 10px; }
+            .empty-recommendation-grid .product-card .brand-badge { font-size: 0.7rem; padding: 2px 8px; }
+            .empty-recommendation-grid .product-card .market-price-highlight { font-size: 0.8rem; padding: 6px 8px; }
+        }
         .product-social-links { position: absolute; left: 12px; right: 12px; bottom: 12px; z-index: 22; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: auto; }
         .product-social-link { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--theme-accent), white 45%); background: linear-gradient(90deg, color-mix(in srgb, var(--theme-accent), white 86%), #fffaf7); color: color-mix(in srgb, var(--theme-text), var(--theme-accent) 35%); font-size: 0.78rem; font-weight: 900; box-shadow: 0 5px 14px var(--theme-glow); }
         
@@ -699,68 +718,75 @@
             const container = document.getElementById('product-container');
             if (items.length === 0) {
                 container.innerHTML = renderEmptyResult();
+                renderEmptyRecommendations(container);
+                container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
                 return;
             }
             const fragment = document.createDocumentFragment();
-            items.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.id = `product-${p.id}`;
-                card.dataset.productId = p.id;
-                const hasMultipleImages = p.images.length > 1;
-                const socialLinks = renderProductSocialLinks(p);
-                const savingsLine = renderSavingsLine(p);
-                
-                const productData = JSON.stringify({
-                    name: p.name,
-                    price: p.specialPrice || p.salePrice || '電洽',
-                    id: p.id,
-                    brand: p.brand,
-                    images: p.images
-                }).replace(/"/g, '&quot;');
-                const safeProductId = escapeJs(p.id);
-                const safeProductName = escapeJs(p.name);
-                const safeBrand = escapeJs(p.brand);
-
-                card.innerHTML = `
-                    ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
-                    <div class="img-container">
-                        <div class="slider-nav nav-left" onclick="handleNavClick(this, -1, event)" style="display:none"><i class="fas fa-chevron-left"></i></div>
-                        <div class="slider-nav nav-right" onclick="handleNavClick(this, 1, event)" ${hasMultipleImages ? '' : 'style="display:none"'}><i class="fas fa-chevron-right"></i></div>
-                        <div class="img-slider" onscroll="handleSliderScroll(this)">
-                            ${p.images.length > 0 ? p.images.map((img, idx) => `<img data-src="${img}" class="lazy-img" onclick="openLightbox(${productData}, ${idx})">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
-                        </div>
-                        ${hasMultipleImages ? `
-                            <div class="slider-dots">
-                                ${p.images.map((_, i) => `<div class="dot ${i === 0 ? 'dot-active' : ''}"></div>`).join('')}
-                            </div>
-                        ` : ''}
-                        <div class="absolute top-4 right-4"><span class="brand-badge">${p.brand}</span></div>
-                        ${socialLinks}
-                    </div>
-                    <div class="p-5 flex-grow flex flex-col justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-800 leading-relaxed">
-                                ${p.productFeature ? `<span class="product-feature-badge">${escapeHtml(p.productFeature)}</span>` : ''}${p.name}
-                            </h3>
-                            ${p.size ? `<span class="product-size-badge">尺寸：${escapeHtml(p.size)}</span>` : ''}
-                        </div>
-                        <div class="mt-3">
-                            <div class="flex flex-col mb-3">
-                                <span class="market-price-highlight">${p.marketPrice || '---'}</span>
-                                ${savingsLine}
-                                <span class="price-main text-pink-600 font-black text-2xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
-                            </div>
-                            <div class="grid grid-cols-[1fr_auto] gap-2">
-                                <button onclick="safeOpenLink('${_LINE_URL}', 'purchase_click', { location: 'product_card', product_id: '${safeProductId}', product_name: '${safeProductName}', brand: '${safeBrand}', price: ${p.finalPrice}, event_name_zh: '點擊立即私訊購買', event_category_zh: '購買意圖', interaction_location_zh: '商品卡片', button_text_zh: '立即私訊購買', destination_platform_zh: 'LINE' })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
-                                <button onclick="shareProduct('${p.id}', event)" class="share-btn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold active:scale-95 transition-all" aria-label="分享商品 ${p.id}"><i class="fas fa-link"></i><span class="hidden sm:inline">分享</span></button>
-                            </div>
-                        </div>
-                    </div>`;
-                fragment.appendChild(card);
-            });
+            items.forEach(p => fragment.appendChild(createProductCard(p)));
             container.appendChild(fragment);
             container.querySelectorAll('.lazy-img').forEach(img => imageObserver.observe(img));
+        }
+
+        function createProductCard(p, source = 'product_card') {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.id = `product-${p.id}`;
+            card.dataset.productId = p.id;
+            card.dataset.cardSource = source;
+            const hasMultipleImages = p.images.length > 1;
+            const socialLinks = renderProductSocialLinks(p);
+            const savingsLine = renderSavingsLine(p);
+            const sourceLabel = source === 'empty_recommendation' ? '空結果推薦商品' : '商品卡片';
+            const lightboxSource = source === 'empty_recommendation' ? 'empty_recommendation' : 'product_image';
+            
+            const productData = JSON.stringify({
+                name: p.name,
+                price: p.specialPrice || p.salePrice || '電洽',
+                id: p.id,
+                brand: p.brand,
+                images: p.images
+            }).replace(/"/g, '&quot;');
+            const safeProductId = escapeJs(p.id);
+            const safeProductName = escapeJs(p.name);
+            const safeBrand = escapeJs(p.brand);
+
+            card.innerHTML = `
+                ${p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : ''}
+                <div class="img-container">
+                    <div class="slider-nav nav-left" onclick="handleNavClick(this, -1, event)" style="display:none"><i class="fas fa-chevron-left"></i></div>
+                    <div class="slider-nav nav-right" onclick="handleNavClick(this, 1, event)" ${hasMultipleImages ? '' : 'style="display:none"'}><i class="fas fa-chevron-right"></i></div>
+                    <div class="img-slider" onscroll="handleSliderScroll(this)">
+                        ${p.images.length > 0 ? p.images.map((img, idx) => `<img data-src="${img}" class="lazy-img" onclick="openLightbox(${productData}, ${idx}, '${lightboxSource}')">`).join('') : `<img data-src="https://via.placeholder.com/400?text=San+Jose" class="lazy-img">`}
+                    </div>
+                    ${hasMultipleImages ? `
+                        <div class="slider-dots">
+                            ${p.images.map((_, i) => `<div class="dot ${i === 0 ? 'dot-active' : ''}"></div>`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="absolute top-4 right-4"><span class="brand-badge">${p.brand}</span></div>
+                    ${socialLinks}
+                </div>
+                <div class="p-5 flex-grow flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-gray-800 leading-relaxed">
+                            <span class="product-title-text">${p.productFeature ? `<span class="product-feature-badge">${escapeHtml(p.productFeature)}</span>` : ''}${escapeHtml(p.name)}</span>
+                        </h3>
+                        ${p.size ? `<span class="product-size-badge">尺寸：${escapeHtml(p.size)}</span>` : ''}
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex flex-col mb-3">
+                            <span class="market-price-highlight">${p.marketPrice || '---'}</span>
+                            ${savingsLine}
+                            <span class="price-main text-pink-600 font-black text-2xl tracking-tight leading-none mt-1">${p.specialPrice || p.salePrice || '電洽'}</span>
+                        </div>
+                        <div class="grid grid-cols-[1fr_auto] gap-2">
+                            <button onclick="safeOpenLink('${_LINE_URL}', 'purchase_click', { location: '${source}', product_id: '${safeProductId}', product_name: '${safeProductName}', brand: '${safeBrand}', price: ${p.finalPrice}, event_name_zh: '點擊立即私訊購買', event_category_zh: '購買意圖', interaction_location_zh: '${sourceLabel}', button_text_zh: '立即私訊購買', destination_platform_zh: 'LINE' })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>
+                            <button onclick="shareProduct('${p.id}', event, '${source}')" class="share-btn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold active:scale-95 transition-all" aria-label="分享商品 ${p.id}"><i class="fas fa-link"></i><span class="hidden sm:inline">分享</span></button>
+                        </div>
+                    </div>
+                </div>`;
+            return card;
         }
 
         function renderProductSocialLinks(product) {
@@ -804,6 +830,46 @@
                 </div>`;
         }
 
+        function renderEmptyRecommendations(container) {
+            const recommendations = getEmptyRecommendations();
+            if (!recommendations.length) return;
+            trackGAEvent('empty_result_recommendation_view', {
+                recommendation_count: recommendations.length,
+                previous_sale: activeSale,
+                previous_category: activeCategory,
+                previous_brand: activeBrand,
+                event_name_zh: '顯示空結果推薦商品',
+                event_category_zh: '空結果推薦',
+                interaction_location_zh: '空結果下方區塊',
+                selected_option_zh: '其他精選商品'
+            });
+            const section = document.createElement('section');
+            section.className = 'col-span-full empty-recommendation-section';
+            section.innerHTML = `
+                <div class="empty-recommendation-header">
+                    <div>
+                        <div class="empty-recommendation-kicker">RECOMMENDED</div>
+                        <h3 class="empty-recommendation-title">更多艾菲精選商品</h3>
+                    </div>
+                </div>
+                <div class="empty-recommendation-grid"></div>
+                <div class="empty-recommendation-action-wrap">
+                    <button type="button" class="empty-result-action" onclick="resetAllFilters()">
+                        <i class="fas fa-border-all"></i>
+                        看全部商品
+                    </button>
+                </div>`;
+            const grid = section.querySelector('.empty-recommendation-grid');
+            recommendations.forEach(product => grid.appendChild(createProductCard(product, 'empty_recommendation')));
+            container.appendChild(section);
+        }
+
+        function getEmptyRecommendations() {
+            return [...allProducts]
+                .sort((a, b) => b.originalIndex - a.originalIndex)
+                .slice(0, 6);
+        }
+
         function handleSliderScroll(el) {
             const index = Math.round(el.scrollLeft / el.clientWidth);
             const dots = el.parentElement.querySelectorAll('.dot');
@@ -828,6 +894,7 @@
             if (next < 0) next = dots.length - 1;
             if (next >= dots.length) next = 0;
             const product = getProductFromElement(btn);
+            const cardSource = btn.closest('.product-card')?.dataset?.cardSource || 'product_card';
             trackGAEvent('product_image_change', {
                 product_id: product?.id || '',
                 product_name: product?.name || '',
@@ -835,7 +902,7 @@
                 image_index: next + 1,
                 event_name_zh: dir > 0 ? '點擊商品圖片下一張' : '點擊商品圖片上一張',
                 event_category_zh: '商品圖片瀏覽',
-                interaction_location_zh: '商品卡片圖片區',
+                interaction_location_zh: cardSource === 'empty_recommendation' ? '空結果推薦商品圖片區' : '商品卡片圖片區',
                 button_text_zh: dir > 0 ? '下一張' : '上一張',
                 selected_option_zh: `第 ${next + 1} 張`
             });
@@ -873,7 +940,7 @@
                 image_index: startIdx + 1,
                 event_name_zh: '開啟商品圖片燈箱',
                 event_category_zh: '商品圖片瀏覽',
-                interaction_location_zh: source === 'shared_link_auto' ? '分享連結自動開啟' : '商品圖片',
+                interaction_location_zh: source === 'shared_link_auto' ? '分享連結自動開啟' : source === 'empty_recommendation' ? '空結果推薦商品圖片' : '商品圖片',
                 button_text_zh: '商品圖片',
                 selected_option_zh: `第 ${startIdx + 1} 張`
             });
@@ -1160,7 +1227,7 @@
                 product_name: product.name,
                 event_name_zh: '分享商品',
                 event_category_zh: '商品分享',
-                interaction_location_zh: source === 'lightbox' ? '商品燈箱' : '商品卡片',
+                interaction_location_zh: source === 'lightbox' ? '商品燈箱' : source === 'empty_recommendation' ? '空結果推薦商品' : '商品卡片',
                 button_text_zh: '分享'
             });
             try {
