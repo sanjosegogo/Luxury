@@ -67,7 +67,16 @@
 
         .brand-badge { background: rgba(255, 255, 255, 0.9); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; color: var(--theme-accent, #C39B9B); backdrop-filter: blur(4px); }
         .sale-tag { background: linear-gradient(45deg, var(--theme-accent, #C39B9B), var(--theme-gold, #D4AF37)); color: white; padding: 6px 14px; border-radius: 0 0 15px 0; font-size: 0.85rem; font-weight: 800; position: absolute; top: 0; left: 0; z-index: 20; }
-        .sold-tag { background: rgba(44, 44, 44, 0.9); color: white; padding: 7px 15px; border-radius: 0 0 15px 0; font-size: 0.82rem; font-weight: 900; letter-spacing: 0.08em; position: absolute; top: 0; left: 0; z-index: 20; }
+        .sold-tag { position: absolute; top: 31px; left: -39px; z-index: 20; width: 180px; transform: rotate(-45deg); transform-origin: center; filter: drop-shadow(0 4px 5px rgba(112, 36, 48, 0.25)); }
+        .sold-label-text { box-sizing: border-box; display: flex; width: 100%; height: 40px; align-items: center; justify-content: center; padding: 0; background: linear-gradient(90deg, #D65B6B 0%, #DE6D7B 50%, #E98B95 100%); color: #fff; border-top: 1px solid rgba(255,255,255,0.55); border-bottom: 1px solid rgba(126,36,52,0.22); font-size: 0.9rem; font-weight: 900; line-height: 1; letter-spacing: 0.14em; text-align: center; text-indent: 0.14em; white-space: nowrap; }
+        .grid-layout-2 .sold-tag { top: 18px; left: -26px; width: 116px; }
+        .grid-layout-2 .sold-label-text { height: 29px; font-size: 0.7rem; }
+        .sold-image-overlay { position: absolute; left: -1px; right: -1px; bottom: -1px; z-index: 18; min-height: 60px; display: flex; align-items: flex-end; justify-content: center; box-sizing: border-box; padding: 25px 14px 11px; background: linear-gradient(to bottom, rgba(190, 64, 79, 0) 0%, rgba(190, 64, 79, 0.42) 42%, rgba(151, 39, 54, 0.88) 100%); color: #fff; font-size: 0.78rem; font-weight: 900; letter-spacing: 0.04em; text-align: center; text-shadow: 0 1px 4px rgba(72,16,25,0.42); pointer-events: none; }
+        .sold-card .product-social-links { bottom: 61px; }
+        .sold-card .slider-dots { bottom: 59px; }
+        .grid-layout-2 .sold-image-overlay { min-height: 46px; padding: 18px 8px 7px; font-size: 0.62rem; letter-spacing: 0; }
+        .grid-layout-2 .sold-card .product-social-links { bottom: 47px; }
+        .grid-layout-2 .sold-card .slider-dots { bottom: 46px; }
         .stock-hint { display: inline-flex; align-items: center; vertical-align: baseline; white-space: nowrap; margin-right: 6px; padding: 3px 8px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--theme-gold, #D4AF37), white 42%); background: color-mix(in srgb, var(--theme-gold, #D4AF37), white 88%); color: color-mix(in srgb, var(--theme-text, #2C2C2C), var(--theme-gold, #D4AF37) 28%); font-size: 0.75rem; line-height: 1.4; font-weight: 900; }
         .grid-layout-2 .stock-hint { margin-right: 4px; padding: 2px 6px; font-size: 0.65rem; }
         .sold-card { border-color: color-mix(in srgb, var(--theme-text, #2C2C2C), white 78%); }
@@ -780,7 +789,7 @@
             const safeBrand = escapeJs(p.brand);
 
             card.innerHTML = `
-                ${p.active === false ? '<div class="sold-tag">已售出</div>' : (p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : '')}
+                ${p.active === false ? '<div class="sold-tag"><span class="sold-label-text">已售出</span></div>' : (p.saleLabel ? `<div class="sale-tag">🔥 ${p.saleLabel}</div>` : '')}
                 <div class="img-container">
                     <div class="slider-nav nav-left" onclick="handleNavClick(this, -1, event)" style="display:none"><i class="fas fa-chevron-left"></i></div>
                     <div class="slider-nav nav-right" onclick="handleNavClick(this, 1, event)" ${hasMultipleImages ? '' : 'style="display:none"'}><i class="fas fa-chevron-right"></i></div>
@@ -793,6 +802,7 @@
                         </div>
                     ` : ''}
                     <div class="absolute top-4 right-4"><span class="brand-badge">${p.brand}</span></div>
+                    ${p.active === false ? '<div class="sold-image-overlay">目前無庫存・歡迎洽詢類似款</div>' : ''}
                     ${socialLinks}
                 </div>
                 <div class="p-5 flex-grow flex flex-col justify-between">
@@ -811,7 +821,7 @@
                         ${p.active === false ? '<p class="sold-contact-copy"><strong>目前無庫存</strong>喜歡這款？歡迎加入官方 LINE 洽詢</p>' : ''}
                         <div class="grid grid-cols-[1fr_auto] gap-2">
                             ${p.active === false
-                                ? `<button onclick="safeOpenLink('${_LINE_URL}', 'sold_product_line_click', { location: '${source}', product_id: '${safeProductId}', product_name: '${safeProductName}', brand: '${safeBrand}', price: ${p.finalPrice}, event_name_zh: '已售出商品聯絡官方 LINE', event_category_zh: '商品詢問', interaction_location_zh: '${sourceLabel}', button_text_zh: '聯絡官方 LINE', destination_platform_zh: 'LINE' })" class="buy-btn sold-line-btn block w-full text-center text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">聯絡官方 LINE</button>`
+                                ? `<button onclick="safeOpenLink('${_LINE_URL}', 'sold_product_line_click', { location: '${source}', product_id: '${safeProductId}', product_name: '${safeProductName}', brand: '${safeBrand}', price: ${p.finalPrice}, event_name_zh: '已售出商品 LINE 洽詢', event_category_zh: '商品詢問', interaction_location_zh: '${sourceLabel}', button_text_zh: 'LINE 洽詢', destination_platform_zh: 'LINE' })" class="buy-btn sold-line-btn block w-full text-center text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">LINE 洽詢</button>`
                                 : `<button onclick="safeOpenLink('${_LINE_URL}', 'purchase_click', { location: '${source}', product_id: '${safeProductId}', product_name: '${safeProductName}', brand: '${safeBrand}', price: ${p.finalPrice}, event_name_zh: '點擊立即私訊購買', event_category_zh: '購買意圖', interaction_location_zh: '${sourceLabel}', button_text_zh: '立即私訊購買', destination_platform_zh: 'LINE' })" class="buy-btn block w-full text-center bg-pink-500 text-white py-3 rounded-xl text-base font-bold shadow-md active:scale-95 transition-all">立即私訊購買</button>`}
                             <button onclick="shareProduct('${p.id}', event, '${source}')" class="share-btn inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-bold active:scale-95 transition-all" aria-label="分享商品 ${p.id}"><i class="fas fa-link"></i><span class="hidden sm:inline">分享</span></button>
                         </div>
@@ -985,7 +995,7 @@
             buyBtn.dataset.productBrand = p.brand || '';
             buyBtn.dataset.active = String(isAvailable);
             buyBtn.classList.toggle('sold-line-btn', !isAvailable);
-            buyBtn.querySelector('span').innerText = isAvailable ? '立即私訊購買' : '聯絡官方 LINE';
+            buyBtn.querySelector('span').innerText = isAvailable ? '立即私訊購買' : 'LINE 洽詢';
             shareBtn.dataset.productId = p.id || '';
 
             trackGAEvent('product_image_open', {
@@ -1314,10 +1324,10 @@
                 product_name: button.dataset.productName || '',
                 brand: button.dataset.productBrand || '',
                 price: button.dataset.productPrice || '',
-                event_name_zh: isAvailable ? '點擊立即私訊購買' : '已售出商品聯絡官方 LINE',
+                event_name_zh: isAvailable ? '點擊立即私訊購買' : '已售出商品 LINE 洽詢',
                 event_category_zh: isAvailable ? '購買意圖' : '商品詢問',
                 interaction_location_zh: '商品燈箱',
-                button_text_zh: isAvailable ? '立即私訊購買' : '聯絡官方 LINE',
+                button_text_zh: isAvailable ? '立即私訊購買' : 'LINE 洽詢',
                 destination_platform_zh: 'LINE'
             });
         }
