@@ -180,6 +180,10 @@
         .layout-toggle-container { background: white; border: 1px solid var(--theme-soft, #EFE2DE); border-radius: 8px; display: flex; padding: 2px; height: 38px; align-items: center; }
         .layout-toggle-btn { width: 34px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; cursor: pointer; color: #d1d5db; }
         .layout-toggle-btn.active { background: var(--theme-accent); color: white; }
+        .layout-toggle-wrap { position: relative; }
+        .layout-hint { position: absolute; top: calc(100% + 10px); right: 0; z-index: 80; padding: 8px 12px; border-radius: 9px; background: rgba(126, 85, 87, 0.95); color: #fff; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.03em; white-space: nowrap; box-shadow: 0 8px 20px rgba(80, 48, 50, 0.2); opacity: 0; transform: translateY(-5px); pointer-events: none; transition: opacity 0.28s ease, transform 0.28s ease; }
+        .layout-hint::before { content: ""; position: absolute; right: 24px; top: -6px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid rgba(126, 85, 87, 0.95); }
+        .layout-hint.show { opacity: 1; transform: translateY(0); }
         
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--theme-accent, #C39B9B); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -303,20 +307,23 @@
 
         <div class="flex flex-wrap items-center justify-end gap-3 mt-5">
             <div class="flex items-center gap-2">
-                <div class="layout-toggle-container">
-                    <div id="layout-single" onclick="toggleLayout('single')" class="layout-toggle-btn active" title="單欄">
-                        <i class="fas fa-square"></i>
+                <div class="layout-toggle-wrap">
+                    <div class="layout-toggle-container">
+                        <div id="layout-single" onclick="toggleLayout('single')" class="layout-toggle-btn" title="單欄">
+                            <i class="fas fa-square"></i>
+                        </div>
+                        <div id="layout-grid" onclick="toggleLayout('grid')" class="layout-toggle-btn active" title="雙欄">
+                            <i class="fas fa-th-large"></i>
+                        </div>
                     </div>
-                    <div id="layout-grid" onclick="toggleLayout('grid')" class="layout-toggle-btn" title="雙欄">
-                        <i class="fas fa-th-large"></i>
-                    </div>
+                    <div id="layout-hint" class="layout-hint" role="status">可切換單欄／雙欄瀏覽</div>
                 </div>
             </div>
         </div>
     </div>
 
     <main class="max-w-screen-md mx-auto px-4 py-5">
-        <div id="product-container" class="grid grid-cols-1 gap-6 min-h-[300px]">
+        <div id="product-container" class="grid grid-cols-2 sm:grid-cols-3 grid-layout-2 gap-3 min-h-[300px]">
             <div id="loading-state" class="col-span-full text-center py-24 text-gray-400">
                 <div class="spinner"></div>
                 <p class="loading-message text-base font-medium tracking-widest px-4">正在連線聖荷西，挑選最划算的精品 ✈️</p>
@@ -413,7 +420,7 @@
         let activeCategory = 'all';
         let hasExplicitSaleFilter = false;
         let currentPage = 1;
-        let layoutMode = 'single'; 
+        let layoutMode = 'grid'; 
         let pendingProductId = null;
         const itemsPerPage = 10;
         
@@ -461,8 +468,46 @@
             }
         }
 
-        function toggleLayout(mode) {
+        function applyLayout(mode, shouldRender = true) {
             layoutMode = mode;
+            const container = document.getElementById('product-container');
+            const singleBtn = document.getElementById('layout-single');
+            const gridBtn = document.getElementById('layout-grid');
+
+            if (mode === 'grid') {
+                container.classList.remove('grid-cols-1', 'gap-6');
+                container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                gridBtn.classList.add('active');
+                singleBtn.classList.remove('active');
+            } else {
+                container.classList.add('grid-cols-1', 'gap-6');
+                container.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
+                singleBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            }
+            if (shouldRender) updateDisplay(false);
+        }
+
+        function dismissLayoutHint() {
+            document.getElementById('layout-hint')?.classList.remove('show');
+            try { sessionStorage.setItem('sanjose_layout_hint_seen', '1'); } catch (_) {}
+        }
+
+        function showLayoutHint() {
+            if (window.innerWidth >= 640) return;
+            try {
+                if (sessionStorage.getItem('sanjose_layout_hint_seen')) return;
+            } catch (_) {}
+            const hint = document.getElementById('layout-hint');
+            if (!hint) return;
+            requestAnimationFrame(() => hint.classList.add('show'));
+            setTimeout(dismissLayoutHint, 3800);
+        }
+
+        function toggleLayout(mode) {
+            applyLayout(mode);
+            try { localStorage.setItem('sanjose_layout_preference', mode); } catch (_) {}
+            dismissLayoutHint();
             trackGAEvent('layout_change', {
                 layout_mode: mode,
                 event_name_zh: '切換商品版型',
@@ -471,35 +516,15 @@
                 button_text_zh: mode === 'grid' ? '雙欄' : '單欄',
                 selected_option_zh: mode === 'grid' ? '雙欄' : '單欄'
             });
-            const container = document.getElementById('product-container');
-            const singleBtn = document.getElementById('layout-single');
-            const gridBtn = document.getElementById('layout-grid');
-
-            if (mode === 'grid') {
-                container.classList.remove('grid-cols-1');
-                container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
-                gridBtn.classList.add('active');
-                singleBtn.classList.remove('active');
-            } else {
-                container.classList.add('grid-cols-1');
-                container.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
-                singleBtn.classList.remove('active');
-                gridBtn.classList.remove('active');
-            }
-            updateDisplay(false);
         }
 
         async function init() {
             clearLegacyCache();
             fetchTheme();
-            if (window.innerWidth >= 640) {
-                layoutMode = 'grid';
-                const container = document.getElementById('product-container');
-                container.classList.remove('grid-cols-1');
-                container.classList.add('grid-cols-2', 'sm:grid-cols-3', 'grid-layout-2', 'gap-3');
-                document.getElementById('layout-grid').classList.add('active');
-                document.getElementById('layout-single').classList.remove('active');
-            }
+            let savedLayout = '';
+            try { savedLayout = localStorage.getItem('sanjose_layout_preference') || ''; } catch (_) {}
+            applyLayout(savedLayout === 'single' ? 'single' : 'grid', false);
+            showLayoutHint();
 
             const params = new URLSearchParams(window.location.search);
             const sortParam = params.get('sort');
