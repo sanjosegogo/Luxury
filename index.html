@@ -43,8 +43,12 @@
         .product-title-text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         
         /* 雙欄模式樣式調整 */
-        .grid-layout-2 .product-card .p-5 { padding: 0.75rem; }
-        .grid-layout-2 .product-card h3 { font-size: 0.875rem; line-height: 1.4; min-height: 3.85rem; margin-bottom: 0.5rem; }
+        .grid-layout-2 { align-items: start; }
+        .grid-layout-2 .product-card { align-self: start; height: auto; }
+        .grid-layout-2 .product-card .p-5 { flex-grow: 0; justify-content: flex-start; padding: 0.75rem; }
+        .grid-layout-2 .product-card h3 { font-size: 0.875rem; line-height: 1.4; min-height: 0; margin-bottom: 0.35rem; }
+        .grid-layout-2 .product-card .p-5 > .mt-3 { margin-top: 0.65rem; }
+        .grid-layout-2 .sold-contact-copy { display: none; }
         .grid-layout-2 .product-card .price-main { font-size: 1.125rem; }
         .grid-layout-2 .product-card .buy-btn { padding: 0.5rem; font-size: 0.875rem; border-radius: 0.75rem; }
         .grid-layout-2 .product-card .share-btn { padding: 0.5rem; font-size: 0.82rem; border-radius: 0.75rem; }
@@ -826,7 +830,6 @@
                             ${p.images.map((_, i) => `<div class="dot ${i === 0 ? 'dot-active' : ''}"></div>`).join('')}
                         </div>
                     ` : ''}
-                    <div class="absolute top-4 right-4"><span class="brand-badge">${p.brand}</span></div>
                     ${p.active === false ? '<div class="sold-image-overlay">目前無庫存・歡迎洽詢類似款</div>' : ''}
                     ${socialLinks}
                 </div>
